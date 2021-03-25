@@ -21,7 +21,6 @@ public class Camera extends AppCompatActivity {
     private CameraPreview mPreview;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,26 +40,26 @@ public class Camera extends AppCompatActivity {
         mCamera = getCameraInstance();
         mPreview = new CameraPreview(this, mCamera);
 
+
+        FrameLayout preview = findViewById(R.id.camera_frame_layout);
+        preview.addView(mPreview);
+
+
         //set camera orientation
         android.hardware.Camera.Parameters p = mCamera.getParameters();
         if (Integer.parseInt(Build.VERSION.SDK) >= 8)
             setDisplayOrientation(mCamera, 90);
-        else
-        {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            {
+        else {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 p.set("orientation", "portrait");
                 p.set("rotation", 90);
             }
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 p.set("orientation", "landscape");
                 p.set("rotation", 90);
             }
         }
 
-        FrameLayout preview = findViewById(R.id.camera_frame_layout);
-        preview.addView(mPreview);
 
     }
 
@@ -73,6 +72,7 @@ public class Camera extends AppCompatActivity {
         }
         return c;
     }
+
 
     protected void setDisplayOrientation(android.hardware.Camera camera, int angle) {
         Method downPolymorphic;
