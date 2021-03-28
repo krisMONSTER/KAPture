@@ -9,4 +9,5 @@
     <string name="choose_alarm_sound">Wybierz sygnał alarmowy</string>
     <string name="start_monitoring">ROZPOCZNIJ MONITOROWANIE</string>
     <string name="hello">Dzień dobry!</string>
+    <string name="settings">Ustawienia</string>
 </resources>

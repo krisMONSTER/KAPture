@@ -9,4 +9,5 @@
     <string name="choose_alarm_sound">Alarmton wählen</string>
     <string name="start_monitoring">STARTÜBERWACHUNG</string>
     <string name="hello">Guten Morgen!</string>
+    <string name="settings">Einstellungen</string>
 </resources>

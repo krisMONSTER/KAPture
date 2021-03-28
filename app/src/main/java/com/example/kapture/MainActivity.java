@@ -26,6 +26,62 @@ public class MainActivity extends AppCompatActivity {
         loadLocale();
         setContentView(R.layout.main_activity);
 
+        //fragment kodu odpowiadajacy za zarzadzanie fragmentami
+        SettingsFragment sf = new SettingsFragment();
+        HistoryFragment hf = new HistoryFragment();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayoutFragment, sf).commit();
+
+
+        ImageButton ic_settings = findViewById(R.id.ic_settings);
+        ic_settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left)
+                        .replace(R.id.frameLayoutFragment, sf)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        TextView settingsText = findViewById(R.id.settingsText);
+        settingsText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left)
+                        .replace(R.id.frameLayoutFragment, sf)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        ImageButton ic_history = findViewById(R.id.ic_history);
+        ic_history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.enter_left_to_right, R.anim.exit_left_to_right)
+                        .replace(R.id.frameLayoutFragment, hf)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        TextView historyText = findViewById(R.id.historyText);
+        historyText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.enter_left_to_right, R.anim.exit_left_to_right)
+                        .replace(R.id.frameLayoutFragment, hf)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        //kod odpowiedzialny za interakcję z poszczególnymi ikonkami i napisami
         ImageButton ic_language = findViewById(R.id.ic_language);
         ic_language.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,24 +116,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton ic_history = findViewById(R.id.ic_history);
-        ic_history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, TestForLanguageChanging.class);
-                startActivity(intent);
-            }
-        });
-
-        TextView historyText = findViewById(R.id.historyText);
-        historyText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, TestForLanguageChanging.class);
-                startActivity(intent);
-            }
-        });
+        //umożliwienie przesuwania się tekstu
+        startMonitoringText.setSelected(true);
+        languageChoiceText.setSelected(true);
+        historyText.setSelected(true);
+        settingsText.setSelected(true);
     }
+
+    //fragment kodu odpowiedzialny za stworzenie alert dialogu z wyborem poszczególnych języków
         private void changeLanguageDialog(){
             final String[] languages = {"English", "Polish", "Deutsch"};
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
@@ -106,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             mDialog.show();
         }
 
+        //fragment kodu odpowiedzialny za ustawienie i wczytywanie ustawien jezykowych
         private void setLocale(String language){
             Locale locale = new Locale(language);
             Locale.setDefault(locale);

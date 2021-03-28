@@ -10,6 +10,7 @@
 
     tools:context=".MainActivity">
 
+    <!--    language section-->
     <TextView
         android:id="@+id/languageChoiceText"
         android:layout_width="wrap_content"
@@ -19,17 +20,27 @@
         android:textColor="@color/colorDetail"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/ic_language"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ic_settings"
+        app:layout_constraintTop_toTopOf="parent"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"/>
 
     <ImageButton
         android:id="@+id/ic_language"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
         android:background="@color/colorPrimary"
         android:src="@drawable/ic_language"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/languageChoiceText"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--    history section-->
     <TextView
         android:id="@+id/historyText"
         android:layout_width="wrap_content"
@@ -38,112 +49,90 @@
         android:text="@string/history"
         android:textColor="@color/colorDetail"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/ic_history"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/ic_history"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"/>
 
+    <!--    settings section-->
     <ImageButton
         android:id="@+id/ic_history"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
         android:background="@color/colorPrimary"
         android:src="@drawable/ic_history"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/settingsText"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/historyText"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <EditText
-        android:id="@+id/delayEditText"
+    <TextView
+        android:id="@+id/settingsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="80dp"
-        android:hint="@string/choose_delay"
+        android:layout_marginTop="16dp"
+        android:text="@string/settings"
         android:textColor="@color/colorDetail"
-        android:textColorHint="@color/colorDetail"
-        android:textSize="24sp"
-        android:textStyle="italic"
-        app:layout_constraintStart_toEndOf="@+id/indicator1"
-        app:layout_constraintTop_toBottomOf="@+id/historyText" />
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/ic_settings"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ic_history"
+        app:layout_constraintTop_toTopOf="parent"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true" />
 
-    <View
-        android:id="@+id/indicator1"
-        android:layout_width="7dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="75dp"
-        android:background="@drawable/indicator"
-        app:layout_constraintEnd_toStartOf="@+id/editText"
+    <ImageButton
+        android:id="@+id/ic_settings"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimary"
+        android:src="@drawable/ic_settings"
+        app:layout_constraintEnd_toStartOf="@+id/languageChoiceText"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/settingsText"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--    fragment section-->
+    <FrameLayout
+        android:id="@+id/frameLayoutFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/startMonitoringText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_history" />
-
-    <EditText
-        android:id="@+id/durationEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
-        android:hint="@string/choose_duration"
-        android:textColor="@color/colorDetail"
-        android:textColorHint="@color/colorDetail"
-        android:textSize="24sp"
-        android:textStyle="italic"
-        app:layout_constraintStart_toEndOf="@+id/indicator2"
-        app:layout_constraintTop_toBottomOf="@+id/delayEditText" />
-
-    <View
-        android:id="@+id/indicator2"
-        android:layout_width="7dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/indicator"
-        app:layout_constraintEnd_toStartOf="@+id/durationEditText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/indicator1" />
-
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
-        android:hint="@string/choose_alarm_sound"
-        android:textColor="@color/colorDetail"
-        android:textColorHint="@color/colorDetail"
-        android:textSize="24sp"
-        android:textStyle="italic"
-        app:layout_constraintStart_toEndOf="@+id/indicator2"
-        app:layout_constraintTop_toBottomOf="@+id/durationEditText" />
-
-    <View
-        android:id="@+id/indicator3"
-        android:layout_width="7dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/indicator"
-        app:layout_constraintEnd_toStartOf="@+id/durationEditText"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/indicator2" />
-
+        app:layout_constraintTop_toBottomOf="@+id/ic_settings" />
 
     <TextView
         android:id="@+id/startMonitoringText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="488dp"
+        android:layout_marginTop="550dp"
         android:text="@string/start_monitoring"
+        android:textAlignment="center"
         android:textColor="@color/colorDetail"
-        android:textSize="40sp"
+        android:textSize="30sp"
         android:textStyle="italic"
-        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/ic_cameraMonitoring"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-        <!--
+        app:layout_constraintTop_toTopOf="parent"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:padding="10dp"/>
+    <!--
         android:shadowColor="@color/colorAccent"
         android:shadowDx="10"
         android:shadowDy="10"
@@ -153,8 +142,8 @@
 
     <ImageButton
         android:id="@+id/ic_cameraMonitoring"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
         android:layout_marginStart="80dp"
         android:layout_marginEnd="81dp"
         android:layout_marginBottom="100dp"
