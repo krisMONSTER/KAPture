@@ -1,5 +1,6 @@
 package com.example.kapture;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -17,33 +18,44 @@ import android.widget.Toast;
 import java.lang.reflect.Method;
 
 public class Camera extends AppCompatActivity {
+
+    private final int PERMISSIONS_REQUEST_CODE = 1;
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
 
+    FrameLayout preview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-        if (ContextCompat.checkSelfPermission(Camera.this,
-                Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_DENIED)
-        // PERMISSION DENIED
-        {
-            ActivityCompat
-                    .requestPermissions(
-                            Camera.this,
-                            new String[]{Manifest.permission.CAMERA},
-                            1);
+        preview = findViewById(R.id.camera_frame_layout);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
         }
+        else {
+            startCamera();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCamera();
+            } else {
+                System.exit(0);
+            }
+        }
+    }
+
+    private void startCamera(){
         mCamera = getCameraInstance();
         mPreview = new CameraPreview(this, mCamera);
 
-
-        FrameLayout preview = findViewById(R.id.camera_frame_layout);
         preview.addView(mPreview);
-
 
         //set camera orientation
         android.hardware.Camera.Parameters p = mCamera.getParameters();
@@ -59,11 +71,9 @@ public class Camera extends AppCompatActivity {
                 p.set("rotation", 90);
             }
         }
-
-
     }
 
-    public static android.hardware.Camera getCameraInstance() {
+    private android.hardware.Camera getCameraInstance() {
         android.hardware.Camera c = null;
         try {
             c = android.hardware.Camera.open();
@@ -73,14 +83,12 @@ public class Camera extends AppCompatActivity {
         return c;
     }
 
-
-    protected void setDisplayOrientation(android.hardware.Camera camera, int angle) {
+    private void setDisplayOrientation(android.hardware.Camera camera, int angle) {
         Method downPolymorphic;
         try {
-            downPolymorphic = camera.getClass().getMethod("setDisplayOrientation", new Class[]{int.class});
+            downPolymorphic = camera.getClass().getMethod("setDisplayOrientation", int.class);
             if (downPolymorphic != null)
-                downPolymorphic.invoke(camera, new Object[]{angle});
-        } catch (Exception e1) {
-        }
+                downPolymorphic.invoke(camera, angle);
+        } catch (Exception ignored) {}
     }
 }
