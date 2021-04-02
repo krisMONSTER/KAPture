@@ -8,20 +8,22 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public class Camera extends AppCompatActivity {
 
     private final int PERMISSIONS_REQUEST_CODE = 1;
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
+    private final Semaphore cameraLock = new Semaphore(0);
 
     FrameLayout preview;
 
@@ -32,12 +34,29 @@ public class Camera extends AppCompatActivity {
 
         preview = findViewById(R.id.camera_frame_layout);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
-        }
-        else {
-            startCamera();
-        }
+        //taken pictures processing
+        android.hardware.Camera.PictureCallback pictureCallback = ((data, camera) -> {
+            new Thread(() -> {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            }).start();
+            camera.startPreview();
+        });
+
+        //monitoring cycle
+        new Thread(() -> {
+            for (int seconds = 0; seconds < 10; seconds++){
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (cameraLock.availablePermits() > 0){
+                    if (mPreview != null && mPreview.isSafeToTakePicture()) {
+                        mCamera.takePicture(null, null, pictureCallback);
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -51,10 +70,29 @@ public class Camera extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cameraLock.tryAcquire();
+        preview.removeAllViews();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
+        }
+        else {
+            startCamera();
+        }
+    }
+
     private void startCamera(){
+        //set camera and preview
         mCamera = getCameraInstance();
         mPreview = new CameraPreview(this, mCamera);
-
         preview.addView(mPreview);
 
         //set camera orientation
@@ -71,6 +109,9 @@ public class Camera extends AppCompatActivity {
                 p.set("rotation", 90);
             }
         }
+
+        //unlock taking pictures
+        cameraLock.release();
     }
 
     private android.hardware.Camera getCameraInstance() {
@@ -87,8 +128,7 @@ public class Camera extends AppCompatActivity {
         Method downPolymorphic;
         try {
             downPolymorphic = camera.getClass().getMethod("setDisplayOrientation", int.class);
-            if (downPolymorphic != null)
-                downPolymorphic.invoke(camera, angle);
+            downPolymorphic.invoke(camera, angle);
         } catch (Exception ignored) {}
     }
 }

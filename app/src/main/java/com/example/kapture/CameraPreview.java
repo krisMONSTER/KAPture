@@ -10,6 +10,7 @@ import java.io.IOException;
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    private boolean safeToTakePicture = false;
 
     public CameraPreview(Context context, Camera camera) {
         super(context);
@@ -26,13 +27,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (IOException e) {
             e.printStackTrace();
         }
+        safeToTakePicture = true;
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        safeToTakePicture = false;
+        mCamera.stopPreview();
+        mCamera.release();
     }
 
-    public void surfaceChanged(SurfaceHolder holedr, int format, int w, int h) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+        safeToTakePicture = false;
         if (mHolder.getSurface() == null)
             return;
         try {
@@ -46,5 +51,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (Exception e) {
             e.printStackTrace();
         }
+        safeToTakePicture = true;
+    }
+
+    public boolean isSafeToTakePicture() {
+        return safeToTakePicture;
     }
 }
