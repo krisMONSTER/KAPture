@@ -60,34 +60,13 @@ public class Camera extends AppCompatActivity {
              */
             Thread processing = new Thread(() -> {
                 cameraBMP = BitmapFactory.decodeByteArray(data, 0, data.length);
-                int x, y = 0;
                 if (cameraTiles == null){
                     cameraTiles = new ArrayList<>();
-                    for (x = 0; x + tileSize < cameraBMP.getWidth(); x += tileSize) {
-                        for (y = 0; y + tileSize < cameraBMP.getHeight(); y += tileSize) {
-                            cameraTiles.add(calculateTile(x, y));
-                        }
-                    }
-                    if (cameraBMP.getWidth() - x > minTileSize) {
-                        //todo
-                    }
-                    if (cameraBMP.getHeight() - y > minTileSize) {
-                        //todo
-                    }
+                    calculateTiles(cameraTiles);
                 }
                 else {
                     ArrayList<int[]> currentCameraTiles = new ArrayList<>();
-                    for (x = 0; x + tileSize < cameraBMP.getWidth(); x += tileSize) {
-                        for (y = 0; y + tileSize < cameraBMP.getHeight(); y += tileSize) {
-                            currentCameraTiles.add(calculateTile(x, y));
-                        }
-                    }
-                    if (cameraBMP.getWidth() - x > minTileSize) {
-                        //todo
-                    }
-                    if (cameraBMP.getHeight() - y > minTileSize) {
-                        //todo
-                    }
+                    calculateTiles(currentCameraTiles);
                     for (int i = 0; i < cameraTiles.size(); i++){
                         int redDifference = Math.abs(cameraTiles.get(i)[0] - currentCameraTiles.get(i)[0]);
                         int greenDifference = Math.abs(cameraTiles.get(i)[1] - currentCameraTiles.get(i)[1]);
@@ -173,6 +152,21 @@ public class Camera extends AppCompatActivity {
             e.printStackTrace();
         }
         super.onBackPressed();
+    }
+
+    private void calculateTiles(ArrayList<int[]> tiles){
+        int x, y = 0;
+        for (x = 0; x + tileSize < cameraBMP.getWidth(); x += tileSize) {
+            for (y = 0; y + tileSize < cameraBMP.getHeight(); y += tileSize) {
+                tiles.add(calculateTile(x, y));
+            }
+        }
+        if (cameraBMP.getWidth() - x > minTileSize) {
+            //todo
+        }
+        if (cameraBMP.getHeight() - y > minTileSize) {
+            //todo
+        }
     }
 
     private int[] calculateTile(int x, int y) {
