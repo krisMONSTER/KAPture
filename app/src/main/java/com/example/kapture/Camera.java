@@ -12,18 +12,28 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class Camera extends AppCompatActivity {
 
     private final int PERMISSIONS_REQUEST_CODE = 1;
+    private final int tileSize = 200;
+    private final int minTileSize = 100;
+    private final int tileTolerance = 8;
+    private ArrayList<int[]> cameraTiles;
+    private final Semaphore cameraLock = new Semaphore(0);
+    private Bitmap cameraBMP;
+    private Thread monitoring;
+    private boolean breakMonitoring = false;
+
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
-    private final Semaphore cameraLock = new Semaphore(0);
 
     FrameLayout preview;
 
@@ -36,27 +46,91 @@ public class Camera extends AppCompatActivity {
 
         //taken pictures processing
         android.hardware.Camera.PictureCallback pictureCallback = ((data, camera) -> {
-            new Thread(() -> {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            }).start();
+            cameraLock.tryAcquire();
             camera.startPreview();
+            //coordinates are flipped
+            /*
+            (0,max)     (0,0)
+                 ********
+                 ********
+                 *screen*
+                 ********
+                 ********
+            (max,max)   (max,0)
+             */
+            Thread processing = new Thread(() -> {
+                cameraBMP = BitmapFactory.decodeByteArray(data, 0, data.length);
+                int x, y = 0;
+                if (cameraTiles == null){
+                    cameraTiles = new ArrayList<>();
+                    for (x = 0; x + tileSize < cameraBMP.getWidth(); x += tileSize) {
+                        for (y = 0; y + tileSize < cameraBMP.getHeight(); y += tileSize) {
+                            cameraTiles.add(calculateTile(x, y));
+                        }
+                    }
+                    if (cameraBMP.getWidth() - x > minTileSize) {
+                        //todo
+                    }
+                    if (cameraBMP.getHeight() - y > minTileSize) {
+                        //todo
+                    }
+                }
+                else {
+                    ArrayList<int[]> currentCameraTiles = new ArrayList<>();
+                    for (x = 0; x + tileSize < cameraBMP.getWidth(); x += tileSize) {
+                        for (y = 0; y + tileSize < cameraBMP.getHeight(); y += tileSize) {
+                            currentCameraTiles.add(calculateTile(x, y));
+                        }
+                    }
+                    if (cameraBMP.getWidth() - x > minTileSize) {
+                        //todo
+                    }
+                    if (cameraBMP.getHeight() - y > minTileSize) {
+                        //todo
+                    }
+                    for (int i = 0; i < cameraTiles.size(); i++){
+                        int redDifference = Math.abs(cameraTiles.get(i)[0] - currentCameraTiles.get(i)[0]);
+                        int greenDifference = Math.abs(cameraTiles.get(i)[1] - currentCameraTiles.get(i)[1]);
+                        int blueDifference = Math.abs(cameraTiles.get(i)[2] - currentCameraTiles.get(i)[2]);
+                        Log.d("red difference", "" + redDifference);
+                        Log.d("green difference", "" + greenDifference);
+                        Log.d("blue difference", "" + blueDifference);
+                        if (redDifference > tileTolerance ||
+                        greenDifference > tileTolerance ||
+                        blueDifference > tileTolerance) {
+                            Log.d("monitoring", "movement detected");
+                        }
+                    }
+                    cameraTiles = currentCameraTiles;
+                }
+            });
+            processing.start();
+            try {
+                processing.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            cameraLock.release();
         });
 
         //monitoring cycle
-        new Thread(() -> {
+        monitoring = new Thread(() -> {
             for (int seconds = 0; seconds < 10; seconds++){
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                if (breakMonitoring)
+                    break;
                 if (cameraLock.availablePermits() > 0){
                     if (mPreview != null && mPreview.isSafeToTakePicture()) {
                         mCamera.takePicture(null, null, pictureCallback);
                     }
                 }
             }
-        }).start();
+        });
+        monitoring.start();
     }
 
     @Override
@@ -89,7 +163,39 @@ public class Camera extends AppCompatActivity {
         }
     }
 
-    private void startCamera(){
+    @Override
+    public void onBackPressed() {
+        breakMonitoring = true;
+        monitoring.interrupt();
+        try {
+            monitoring.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        super.onBackPressed();
+    }
+
+    private int[] calculateTile(int x, int y) {
+        int r = 0;
+        int g = 0;
+        int b = 0;
+        int colour;
+        for (int i = x; i < tileSize + x; i++) {
+            for (int ii = y; ii < tileSize + y; ii++) {
+                colour = cameraBMP.getPixel(i, ii);
+                r += (colour >> 16) & 0xff;
+                g += (colour >> 8) & 0xff;
+                b += colour & 0xff;
+            }
+        }
+        return new int[]{
+                r / (tileSize * tileSize),
+                g / (tileSize * tileSize),
+                b / (tileSize * tileSize)
+        };
+    }
+
+    private void startCamera() {
         //set camera and preview
         mCamera = getCameraInstance();
         mPreview = new CameraPreview(this, mCamera);
