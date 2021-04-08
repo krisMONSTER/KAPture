@@ -10,10 +10,12 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,14 +36,14 @@ public class Camera extends AppCompatActivity {
 
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
-
+    AudioManager amanager;
     FrameLayout preview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
+        amanager = (AudioManager) getSystemService(this.AUDIO_SERVICE);
         preview = findViewById(R.id.camera_frame_layout);
 
         //taken pictures processing
@@ -60,23 +62,23 @@ public class Camera extends AppCompatActivity {
              */
             Thread processing = new Thread(() -> {
                 cameraBMP = BitmapFactory.decodeByteArray(data, 0, data.length);
-                if (cameraTiles == null){
+                cameraBMP = Bitmap.createScaledBitmap(cameraBMP, 400, 400, false);
+                if (cameraTiles == null) {
                     cameraTiles = new ArrayList<>();
                     calculateTiles(cameraTiles);
-                }
-                else {
+                } else {
                     ArrayList<int[]> currentCameraTiles = new ArrayList<>();
                     calculateTiles(currentCameraTiles);
-                    for (int i = 0; i < cameraTiles.size(); i++){
+                    for (int i = 0; i < cameraTiles.size(); i++) {
                         int redDifference = Math.abs(cameraTiles.get(i)[0] - currentCameraTiles.get(i)[0]);
                         int greenDifference = Math.abs(cameraTiles.get(i)[1] - currentCameraTiles.get(i)[1]);
                         int blueDifference = Math.abs(cameraTiles.get(i)[2] - currentCameraTiles.get(i)[2]);
-                        Log.d("red difference", "" + redDifference);
-                        Log.d("green difference", "" + greenDifference);
-                        Log.d("blue difference", "" + blueDifference);
+                        //Log.d("red difference", "" + redDifference);
+                        //Log.d("green difference", "" + greenDifference);
+                        //Log.d("blue difference", "" + blueDifference);
                         if (redDifference > tileTolerance ||
-                        greenDifference > tileTolerance ||
-                        blueDifference > tileTolerance) {
+                                greenDifference > tileTolerance ||
+                                blueDifference > tileTolerance) {
                             Log.d("monitoring", "movement detected");
                         }
                     }
@@ -94,17 +96,33 @@ public class Camera extends AppCompatActivity {
 
         //monitoring cycle
         monitoring = new Thread(() -> {
-            for (int seconds = 0; seconds < 10; seconds++){
+            for (int seconds = 0; seconds < 20; seconds++) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
+
+                    /*amanager.setStreamVolume(AudioManager.STREAM_NOTIFICATION,,1);
+                    amanager.setStreamVolume(AudioManager.STREAM_RING,0,1);
+                    amanager.setStreamVolume(AudioManager.STREAM_SYSTEM,0,1);*/
+
+                  /*  amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, false);
+                    amanager.setStreamMute(AudioManager.STREAM_ALARM, false);
+                    amanager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+                    amanager.setStreamMute(AudioManager.STREAM_RING, false);
+                    amanager.setStreamMute(AudioManager.STREAM_SYSTEM, false);*/
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 if (breakMonitoring)
                     break;
-                if (cameraLock.availablePermits() > 0){
+                if (cameraLock.availablePermits() > 0) {
                     if (mPreview != null && mPreview.isSafeToTakePicture()) {
+                       /* amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, true);
+                        amanager.setStreamMute(AudioManager.STREAM_ALARM, true);
+                        amanager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+                        amanager.setStreamMute(AudioManager.STREAM_RING, true);
+                        amanager.setStreamMute(AudioManager.STREAM_SYSTEM, true);*/
                         mCamera.takePicture(null, null, pictureCallback);
+
                     }
                 }
             }
@@ -136,8 +154,7 @@ public class Camera extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
-        }
-        else {
+        } else {
             startCamera();
         }
     }
@@ -154,7 +171,7 @@ public class Camera extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void calculateTiles(ArrayList<int[]> tiles){
+    private void calculateTiles(ArrayList<int[]> tiles) {
         int x, y = 0;
         for (x = 0; x + tileSize < cameraBMP.getWidth(); x += tileSize) {
             for (y = 0; y + tileSize < cameraBMP.getHeight(); y += tileSize) {
@@ -229,6 +246,7 @@ public class Camera extends AppCompatActivity {
         try {
             downPolymorphic = camera.getClass().getMethod("setDisplayOrientation", int.class);
             downPolymorphic.invoke(camera, angle);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 }
