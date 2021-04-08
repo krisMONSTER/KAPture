@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.LocaleList;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -45,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*
         TextView settingsText = findViewById(R.id.settingsText);
         settingsText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
             }
         });
+
+         */
 
         ImageButton ic_history = findViewById(R.id.ic_history);
         ic_history.setOnClickListener(new View.OnClickListener() {
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*
         TextView historyText = findViewById(R.id.historyText);
         historyText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
             }
         });
+
+         */
 
         //kod odpowiedzialny za interakcję z poszczególnymi ikonkami i napisami
         ImageButton ic_language = findViewById(R.id.ic_language);
@@ -119,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
         //umożliwienie przesuwania się tekstu
         startMonitoringText.setSelected(true);
         languageChoiceText.setSelected(true);
-        historyText.setSelected(true);
-        settingsText.setSelected(true);
+        //historyText.setSelected(true);
+        //settingsText.setSelected(true);
     }
 
     //fragment kodu odpowiedzialny za stworzenie alert dialogu z wyborem poszczególnych języków

@@ -55,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="11dp"
+        android:layout_marginTop="9dp"
         android:layout_marginEnd="10dp"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
@@ -63,7 +63,7 @@
         android:singleLine="true"
         android:text="@string/language"
         android:textColor="@color/colorDetail"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/ic_language"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toEndOf="@+id/ic_settings"
@@ -71,8 +71,9 @@
 
     <ImageButton
         android:id="@+id/ic_language"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:scaleType="fitXY"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="15dp"
         android:background="@color/colorPrimary"
@@ -82,8 +83,9 @@
 
     <ImageButton
         android:id="@+id/ic_history"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:scaleType="fitXY"
         android:layout_marginStart="15dp"
         android:layout_marginTop="4dp"
         android:background="@color/colorPrimary"
@@ -93,8 +95,9 @@
 
     <ImageButton
         android:id="@+id/ic_settings"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:scaleType="fitXY"
         android:layout_marginTop="4dp"
         android:background="@color/colorPrimary"
         android:src="@drawable/ic_settings"
@@ -118,7 +121,7 @@
         android:id="@+id/startMonitoringText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="550dp"
+        android:layout_marginTop="380dp"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
         android:padding="10dp"
@@ -127,7 +130,7 @@
         android:text="@string/start_monitoring"
         android:textAlignment="center"
         android:textColor="@color/colorDetail"
-        android:textSize="30sp"
+        android:textSize="25sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toTopOf="@+id/ic_cameraMonitoring"
         app:layout_constraintEnd_toEndOf="parent"
@@ -143,8 +146,9 @@
 
     <ImageButton
         android:id="@+id/ic_cameraMonitoring"
-        android:layout_width="155dp"
-        android:layout_height="155dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:scaleType="fitXY"
         android:layout_marginStart="80dp"
         android:layout_marginEnd="81dp"
         android:layout_marginBottom="100dp"
