@@ -57,4 +57,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public boolean isSafeToTakePicture() {
         return safeToTakePicture;
     }
+
+    public void setSafeToTakePicture(boolean safe) {
+        this.safeToTakePicture = safe;
+    }
 }

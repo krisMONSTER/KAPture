@@ -50,6 +50,7 @@ public class Camera extends AppCompatActivity {
         android.hardware.Camera.PictureCallback pictureCallback = ((data, camera) -> {
             cameraLock.tryAcquire();
             camera.startPreview();
+            mPreview.setSafeToTakePicture(true);
             //coordinates are flipped
             /*
             (0,max)     (0,0)
@@ -98,17 +99,7 @@ public class Camera extends AppCompatActivity {
         monitoring = new Thread(() -> {
             for (int seconds = 0; seconds < 20; seconds++) {
                 try {
-                    TimeUnit.SECONDS.sleep(1);
-
-                    /*amanager.setStreamVolume(AudioManager.STREAM_NOTIFICATION,,1);
-                    amanager.setStreamVolume(AudioManager.STREAM_RING,0,1);
-                    amanager.setStreamVolume(AudioManager.STREAM_SYSTEM,0,1);*/
-
-                  /*  amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, false);
-                    amanager.setStreamMute(AudioManager.STREAM_ALARM, false);
-                    amanager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-                    amanager.setStreamMute(AudioManager.STREAM_RING, false);
-                    amanager.setStreamMute(AudioManager.STREAM_SYSTEM, false);*/
+                    TimeUnit.SECONDS.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -116,13 +107,8 @@ public class Camera extends AppCompatActivity {
                     break;
                 if (cameraLock.availablePermits() > 0) {
                     if (mPreview != null && mPreview.isSafeToTakePicture()) {
-                       /* amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, true);
-                        amanager.setStreamMute(AudioManager.STREAM_ALARM, true);
-                        amanager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-                        amanager.setStreamMute(AudioManager.STREAM_RING, true);
-                        amanager.setStreamMute(AudioManager.STREAM_SYSTEM, true);*/
                         mCamera.takePicture(null, null, pictureCallback);
-
+                        mPreview.setSafeToTakePicture(false);
                     }
                 }
             }
