@@ -15,24 +15,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class Camera extends AppCompatActivity {
 
     private final int PERMISSIONS_REQUEST_CODE = 1;
     private final int tileSize = 200;
-    private final int minTileSize = 100;
     private final int tileTolerance = 8;
     private ArrayList<int[]> cameraTiles;
-    private final Semaphore cameraLock = new Semaphore(0);
     private Bitmap cameraBMP;
     private Thread monitoring;
     private boolean breakMonitoring = false;
+    private boolean safeToTakePicture = false;
 
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
@@ -48,7 +45,7 @@ public class Camera extends AppCompatActivity {
 
         //taken pictures processing
         android.hardware.Camera.PictureCallback pictureCallback = ((data, camera) -> {
-            cameraLock.tryAcquire();
+            safeToTakePicture = false;
             camera.startPreview();
             mPreview.setSafeToTakePicture(true);
             //coordinates are flipped
@@ -92,20 +89,20 @@ public class Camera extends AppCompatActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            cameraLock.release();
+            safeToTakePicture = true;
         });
 
         //monitoring cycle
         monitoring = new Thread(() -> {
             for (int seconds = 0; seconds < 20; seconds++) {
                 try {
-                    TimeUnit.SECONDS.sleep(1000);
+                    TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    break;
                 }
                 if (breakMonitoring)
                     break;
-                if (cameraLock.availablePermits() > 0) {
+                if (safeToTakePicture) {
                     if (mPreview != null && mPreview.isSafeToTakePicture()) {
                         mCamera.takePicture(null, null, pictureCallback);
                         mPreview.setSafeToTakePicture(false);
@@ -130,7 +127,7 @@ public class Camera extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        cameraLock.tryAcquire();
+        safeToTakePicture = false;
         preview.removeAllViews();
     }
 
@@ -158,17 +155,11 @@ public class Camera extends AppCompatActivity {
     }
 
     private void calculateTiles(ArrayList<int[]> tiles) {
-        int x, y = 0;
+        int x, y;
         for (x = 0; x + tileSize < cameraBMP.getWidth(); x += tileSize) {
             for (y = 0; y + tileSize < cameraBMP.getHeight(); y += tileSize) {
                 tiles.add(calculateTile(x, y));
             }
-        }
-        if (cameraBMP.getWidth() - x > minTileSize) {
-            //todo
-        }
-        if (cameraBMP.getHeight() - y > minTileSize) {
-            //todo
         }
     }
 
@@ -199,22 +190,12 @@ public class Camera extends AppCompatActivity {
         preview.addView(mPreview);
 
         //set camera orientation
-        android.hardware.Camera.Parameters p = mCamera.getParameters();
-        if (Integer.parseInt(Build.VERSION.SDK) >= 8)
-            setDisplayOrientation(mCamera, 90);
-        else {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                p.set("orientation", "portrait");
-                p.set("rotation", 90);
-            }
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                p.set("orientation", "landscape");
-                p.set("rotation", 90);
-            }
-        }
+        /* api level is > 24 so method below is redundant */
+        /*setCameraOrientation();*/
+        setOrientation();
 
         //unlock taking pictures
-        cameraLock.release();
+        safeToTakePicture = true;
     }
 
     private android.hardware.Camera getCameraInstance() {
@@ -227,12 +208,27 @@ public class Camera extends AppCompatActivity {
         return c;
     }
 
-    private void setDisplayOrientation(android.hardware.Camera camera, int angle) {
+    private void setOrientation() {
         Method downPolymorphic;
         try {
-            downPolymorphic = camera.getClass().getMethod("setDisplayOrientation", int.class);
-            downPolymorphic.invoke(camera, angle);
-        } catch (Exception ignored) {
-        }
+            downPolymorphic = mCamera.getClass().getMethod("setDisplayOrientation", int.class);
+            downPolymorphic.invoke(mCamera, 90);
+        } catch (Exception ignored) {}
     }
+
+    /*private void setCameraOrientation(){
+        android.hardware.Camera.Parameters p = mCamera.getParameters();
+        if (Integer.parseInt(Build.VERSION.SDK) >= 8)
+            setOrientation(mCamera);
+        else {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                p.set("orientation", "portrait");
+                p.set("rotation", 90);
+            }
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                p.set("orientation", "landscape");
+                p.set("rotation", 90);
+            }
+        }
+    }*/
 }

@@ -8,8 +8,8 @@ import android.view.SurfaceView;
 import java.io.IOException;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-    private SurfaceHolder mHolder;
-    private Camera mCamera;
+    private final SurfaceHolder mHolder;
+    private final Camera mCamera;
     private boolean safeToTakePicture = false;
 
     public CameraPreview(Context context, Camera camera) {
