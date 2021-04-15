@@ -16,10 +16,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 public class Camera extends AppCompatActivity {
 
@@ -31,6 +34,8 @@ public class Camera extends AppCompatActivity {
     private Thread monitoring;
     private boolean breakMonitoring = false;
     private boolean safeToTakePicture = false;
+    private final Semaphore startMonitoring = new Semaphore(0);
+    private OrientationListener orientationListener;
 
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
@@ -41,6 +46,19 @@ public class Camera extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         preview = findViewById(R.id.camera_frame_layout);
+
+        //detect orientation change to flip fragment view
+        orientationListener = new OrientationListener(this) {
+            @Override
+            public void onSimpleOrientationChanged(int orientation) {
+                if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+                    System.out.println("landscape");
+                }else if(orientation == Configuration.ORIENTATION_PORTRAIT){
+                    System.out.println("portrait");
+                }
+            }
+        };
+        orientationListener.enable();
 
         //taken pictures processing
         android.hardware.Camera.PictureCallback pictureCallback = ((data, camera) -> {
@@ -100,6 +118,12 @@ public class Camera extends AppCompatActivity {
 
         //monitoring cycle
         monitoring = new Thread(() -> {
+            //wait for camera to load
+            try {
+                startMonitoring.acquire();
+            } catch (InterruptedException e) {
+                return;
+            }
             //opóźnienie
             try {
                 TimeUnit.SECONDS.sleep(delay);
@@ -123,6 +147,12 @@ public class Camera extends AppCompatActivity {
             }
         });
         monitoring.start();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        orientationListener.disable();
     }
 
     @Override
@@ -201,7 +231,6 @@ public class Camera extends AppCompatActivity {
         mPreview = new CameraPreview(this, mCamera);
         preview.addView(mPreview);
 
-
         //ustawienie rozdzielczości wyświetlanego obrazu
         android.hardware.Camera.Parameters parameters = mCamera.getParameters();
         for (android.hardware.Camera.Size x : parameters.getSupportedPreviewSizes()) {
@@ -226,13 +255,16 @@ public class Camera extends AppCompatActivity {
 
 
         mCamera.setParameters(parameters);
+
         //set camera orientation
-        /* api level is > 24 so method below is redundant */
-        /*setCameraOrientation();*/
         setOrientation();
 
         //unlock taking pictures
         safeToTakePicture = true;
+
+        //start monitoring
+        if (startMonitoring.availablePermits() == 0)
+            startMonitoring.release();
     }
 
     private android.hardware.Camera getCameraInstance() {
@@ -253,20 +285,4 @@ public class Camera extends AppCompatActivity {
         } catch (Exception ignored) {
         }
     }
-
-    /*private void setCameraOrientation(){
-        android.hardware.Camera.Parameters p = mCamera.getParameters();
-        if (Integer.parseInt(Build.VERSION.SDK) >= 8)
-            setOrientation(mCamera);
-        else {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                p.set("orientation", "portrait");
-                p.set("rotation", 90);
-            }
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                p.set("orientation", "landscape");
-                p.set("rotation", 90);
-            }
-        }
-    }*/
 }
