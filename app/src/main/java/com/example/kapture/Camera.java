@@ -214,6 +214,7 @@ public class Camera extends AppCompatActivity {
 
         }
         //ustawienie typu focusa
+
         if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
             parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         else if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY))
@@ -226,6 +227,8 @@ public class Camera extends AppCompatActivity {
 
 
         mCamera.setParameters(parameters);
+
+
         //set camera orientation
         /* api level is > 24 so method below is redundant */
         /*setCameraOrientation();*/

@@ -1,6 +1,7 @@
 package com.example.kapture;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,8 +19,12 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements SettingsFragment.IListener {
 
+    public static final String SHARED_PREFS = "SettingsFragment";
+    public static final String DELAY = "delayName";
+    public static final String DURATION = "durationName";
+
+    int delay = 5;
     int duration = 10;
-    int delay = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,21 +51,6 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
             }
         });
 
-        /*
-        TextView settingsText = findViewById(R.id.settingsText);
-        settingsText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left)
-                        .replace(R.id.frameLayoutFragment, sf)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-         */
-
         ImageButton ic_history = findViewById(R.id.ic_history);
         ic_history.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,21 +62,6 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
                         .commit();
             }
         });
-
-        /*
-        TextView historyText = findViewById(R.id.historyText);
-        historyText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.enter_left_to_right, R.anim.exit_left_to_right)
-                        .replace(R.id.frameLayoutFragment, hf)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-         */
 
         //kod odpowiedzialny za interakcję z poszczególnymi ikonkami i napisami
         ImageButton ic_language = findViewById(R.id.ic_language);
@@ -109,12 +84,13 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         ic_cameraMonitoring.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
                 Intent intent = new Intent(MainActivity.this, Camera.class);
-                intent.putExtra("duration", duration);
-                intent.putExtra("delay", delay);
+                intent.putExtra("delay",  sharedPreferences.getInt(DELAY, 2));
+                intent.putExtra("duration", sharedPreferences.getInt(DURATION, 6));
                 startActivity(intent);
-                System.out.println("Duration Main.class " + duration);
-                System.out.println("Delay Main.class " + delay);
+                System.out.println("Delay Main.class " + sharedPreferences.getInt(DELAY, 2));
+                System.out.println("Duration Main.class " + sharedPreferences.getInt(DURATION, 6));
 
             }
         });
@@ -123,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         startMonitoringText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
                 Intent intent = new Intent(MainActivity.this, Camera.class);
                 intent.putExtra("duration", duration);
                 intent.putExtra("delay", delay);
@@ -136,10 +113,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         //historyText.setSelected(true);
         //settingsText.setSelected(true);
 
-
     }
-
-
 
     //fragment kodu odpowiedzialny za stworzenie alert dialogu z wyborem poszczególnych języków
         private void changeLanguageDialog(){
@@ -192,10 +166,21 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
     @Override
     public void setDuration(int duration) {
         this.duration = duration;
+        saveData();
     }
 
     @Override
     public void setDelay(int delay) {
         this.delay = delay;
+        saveData();
+    }
+
+    public void saveData(){
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putInt(DELAY, this.delay);
+        editor.putInt(DURATION, this.duration);
+        editor.apply();
     }
 }
