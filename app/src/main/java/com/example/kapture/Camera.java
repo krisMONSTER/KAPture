@@ -34,14 +34,12 @@ public class Camera extends AppCompatActivity {
 
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
-    AudioManager amanager;
     FrameLayout preview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        amanager = (AudioManager) getSystemService(this.AUDIO_SERVICE);
         preview = findViewById(R.id.camera_frame_layout);
 
         //taken pictures processing
