@@ -203,6 +203,31 @@ public class Camera extends AppCompatActivity {
         mPreview = new CameraPreview(this, mCamera);
         preview.addView(mPreview);
 
+
+        //ustawienie rozdzielczości wyświetlanego obrazu
+        android.hardware.Camera.Parameters parameters = mCamera.getParameters();
+        for (android.hardware.Camera.Size x : parameters.getSupportedPreviewSizes()) {
+            if (((float) x.width / x.height) == 16f / 9f) {
+                //parameters.setPreviewSize(176,144);
+                parameters.setPreviewSize(x.width, x.height);
+                //System.out.println("Ustawiono: "+ x.width + " x " + x.height);
+                break;
+            }
+
+        }
+        //ustawienie typu focusa
+        if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
+            parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        else if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY))
+            parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY);
+        else
+            parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO);
+
+        //System.out.println("Scene modes: " + parameters.getSupportedSceneModes());
+        //parameters.setSceneMode(android.hardware.Camera.Parameters.SCENE_MODE_HDR);
+
+
+        mCamera.setParameters(parameters);
         //set camera orientation
         /* api level is > 24 so method below is redundant */
         /*setCameraOrientation();*/
@@ -227,7 +252,8 @@ public class Camera extends AppCompatActivity {
         try {
             downPolymorphic = mCamera.getClass().getMethod("setDisplayOrientation", int.class);
             downPolymorphic.invoke(mCamera, 90);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     /*private void setCameraOrientation(){

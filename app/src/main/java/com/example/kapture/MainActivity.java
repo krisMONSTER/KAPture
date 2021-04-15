@@ -19,7 +19,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements SettingsFragment.IListener {
 
     int duration = 10;
-    int delay = 5;
+    int delay = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
