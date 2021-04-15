@@ -1,8 +1,11 @@
 package com.example.kapture;
 
+import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.icu.number.Scale;
 import android.os.Bundle;
 
@@ -20,10 +23,19 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
 
     private EditText durationEditText, delayEditText;
+
+    public static final String SHARED_PREFS = "SettingsFragment";
+    public static final String DELAY = "delayName";
+    public static final String DURATION = "durationName";
+
+    private int delay;
+    private int duration;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,6 +63,9 @@ public class SettingsFragment extends Fragment {
             }
         });
         // Inflate the layout for this fragment
+
+        loadData();
+        updateViews();
         return view;
     }
 
@@ -62,12 +77,12 @@ public class SettingsFragment extends Fragment {
             public void onTimeSet(TimePicker timePicker, int minute, int second) {
                 calendar.set(Calendar.MINUTE, minute);
                 calendar.set(Calendar.SECOND, second);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("" + (minute*60 + second));
-
-                durationEditText.setText(getString(R.string.duration) + ' ' + simpleDateFormat.format(calendar.getTime()) + " sec");
 
                 int duration = minute*60 + second;
                 mListener.setDuration(duration);
+
+                durationEditText.setText(getString(R.string.duration) + ' ' + duration + " sec");
+
 
             }
         };
@@ -82,12 +97,11 @@ public class SettingsFragment extends Fragment {
             public void onTimeSet(TimePicker timePicker, int minute, int second) {
                 calendar.set(Calendar.MINUTE, minute);
                 calendar.set(Calendar.SECOND, second);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("" + (minute*60 + second));
-
-                delayEditText.setText(getString(R.string.delay) + ' ' + simpleDateFormat.format(calendar.getTime()) + " sec");
 
                 int delay = minute*60 + second;
                 mListener.setDelay(delay);
+
+                delayEditText.setText(getString(R.string.delay) + ' ' + delay + " sec");
 
             }
         };
@@ -111,5 +125,17 @@ public class SettingsFragment extends Fragment {
     public interface IListener{
         void setDuration(int duration);
         void setDelay(int delay);
+    }
+
+    public void loadData(){
+        SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+
+        delay = sharedPreferences.getInt(DELAY, 3);
+        duration = sharedPreferences.getInt(DURATION, 7);
+    }
+
+    public void updateViews(){
+        delayEditText.setText(getString(R.string.delay) + ' ' + delay + " sec");
+        durationEditText.setText(getString(R.string.duration) + ' ' + duration + " sec");
     }
 }
