@@ -5,7 +5,9 @@
     <string name="language">Polski</string>
     <string name="history">Historia</string>
     <string name="choose_delay">Wybierz opóźnienie</string>
+    <string name="delay">Opóźnienie: </string>
     <string name="choose_duration">Wybierz czas trwania</string>
+    <string name="duration">Czas trwania: </string>
     <string name="choose_alarm_sound">Wybierz sygnał alarmowy</string>
     <string name="start_monitoring">ROZPOCZNIJ MONITOROWANIE</string>
     <string name="hello">Dzień dobry!</string>

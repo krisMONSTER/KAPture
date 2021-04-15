@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -15,7 +16,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SettingsFragment.IListener {
+
+    int duration = 10;
+    int delay = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         HistoryFragment hf = new HistoryFragment();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayoutFragment, sf).commit();
-
 
         ImageButton ic_settings = findViewById(R.id.ic_settings);
         ic_settings.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +110,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, Camera.class);
+                intent.putExtra("duration", duration);
+                intent.putExtra("delay", delay);
                 startActivity(intent);
+                System.out.println("Duration Main.class " + duration);
+                System.out.println("Delay Main.class " + delay);
+
             }
         });
 
@@ -116,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, Camera.class);
+                intent.putExtra("duration", duration);
+                intent.putExtra("delay", delay);
                 startActivity(intent);
             }
         });
@@ -125,7 +135,11 @@ public class MainActivity extends AppCompatActivity {
         languageChoiceText.setSelected(true);
         //historyText.setSelected(true);
         //settingsText.setSelected(true);
+
+
     }
+
+
 
     //fragment kodu odpowiedzialny za stworzenie alert dialogu z wyborem poszczególnych języków
         private void changeLanguageDialog(){
@@ -174,4 +188,14 @@ public class MainActivity extends AppCompatActivity {
             String language = preferences.getString("My_Lang", "");
             setLocale(language);
         }
+
+    @Override
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    @Override
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
 }

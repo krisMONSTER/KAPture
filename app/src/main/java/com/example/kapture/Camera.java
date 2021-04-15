@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -92,9 +93,22 @@ public class Camera extends AppCompatActivity {
             safeToTakePicture = true;
         });
 
+        //getting data from pickers
+        Intent intent = getIntent();
+        int duration = intent.getIntExtra("duration", 0);
+        int delay = intent.getIntExtra("delay", 0);
+        System.out.println("Duration Camera.class " + duration);
+        System.out.println("Delay Camera.class " + delay);
+
         //monitoring cycle
         monitoring = new Thread(() -> {
-            for (int seconds = 0; seconds < 20; seconds++) {
+            //opóźnienie
+            try {
+                TimeUnit.SECONDS.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            for (int seconds = 0; seconds < duration; seconds++) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {

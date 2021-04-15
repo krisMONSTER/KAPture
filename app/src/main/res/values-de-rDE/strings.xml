@@ -5,7 +5,9 @@
     <string name="language">Deutsch</string>
     <string name="history">Historie</string>
     <string name="choose_delay">Verzögerung wählen</string>
+    <string name="delay">Verzögerung: </string>
     <string name="choose_duration">Dauer wählen</string>
+    <string name="duration">Dauer: </string>
     <string name="choose_alarm_sound">Alarmton wählen</string>
     <string name="start_monitoring">STARTÜBERWACHUNG</string>
     <string name="hello">Guten Morgen!</string>
