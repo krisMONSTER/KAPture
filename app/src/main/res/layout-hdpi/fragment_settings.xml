@@ -30,7 +30,7 @@
         android:layout_marginBottom="165dp"
         android:background="@drawable/indicator"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/editText"
+        app:layout_constraintEnd_toStartOf="@+id/chooseAlarmSoundText"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -62,7 +62,7 @@
         app:layout_constraintTop_toBottomOf="@+id/indicator1" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/chooseAlarmSoundText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"

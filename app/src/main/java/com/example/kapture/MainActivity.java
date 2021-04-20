@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
     public static final String SHARED_PREFS = "SettingsFragment";
     public static final String DELAY = "delayName";
     public static final String DURATION = "durationName";
+    public static final String ALARM_ID = "alarmId";
 
     int delay = 5;
     int duration = 10;
@@ -88,9 +89,11 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
                 Intent intent = new Intent(MainActivity.this, Camera.class);
                 intent.putExtra("delay",  sharedPreferences.getInt(DELAY, 2));
                 intent.putExtra("duration", sharedPreferences.getInt(DURATION, 6));
+                intent.putExtra("alarmId", sharedPreferences.getInt(ALARM_ID, 0));
                 startActivity(intent);
                 System.out.println("Delay Main.class " + sharedPreferences.getInt(DELAY, 2));
                 System.out.println("Duration Main.class " + sharedPreferences.getInt(DURATION, 6));
+                System.out.println("Alarm_id Main.class " + sharedPreferences.getInt(ALARM_ID, 0));
 
             }
         });
@@ -101,15 +104,21 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
             public void onClick(View view) {
                 SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
                 Intent intent = new Intent(MainActivity.this, Camera.class);
-                intent.putExtra("duration", duration);
-                intent.putExtra("delay", delay);
+                intent.putExtra("delay",  sharedPreferences.getInt(DELAY, 2));
+                intent.putExtra("duration", sharedPreferences.getInt(DURATION, 6));
+                intent.putExtra("alarmId", sharedPreferences.getInt(ALARM_ID, 0));
                 startActivity(intent);
+                System.out.println("Delay Main.class " + sharedPreferences.getInt(DELAY, 2));
+                System.out.println("Duration Main.class " + sharedPreferences.getInt(DURATION, 6));
+                System.out.println("Alarm_id Main.class " + sharedPreferences.getInt(ALARM_ID, 0));
             }
         });
+
 
         //umożliwienie przesuwania się tekstu
         startMonitoringText.setSelected(true);
         languageChoiceText.setSelected(true);
+
         //historyText.setSelected(true);
         //settingsText.setSelected(true);
 

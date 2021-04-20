@@ -11,7 +11,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +39,9 @@ public class Camera extends AppCompatActivity {
     private final Semaphore startMonitoring = new Semaphore(0);
     private OrientationListener orientationListener;
 
+    private SoundPool soundPool;
+    private int sound1, sound2, sound3, sound4, sound5, sound6, sound7, sound8, sound9, sound10;
+
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
     FrameLayout preview;
@@ -59,6 +64,40 @@ public class Camera extends AppCompatActivity {
             }
         };
         orientationListener.enable();
+
+        //getting data from pickers
+        Intent intent = getIntent();
+        int duration = intent.getIntExtra("duration", 0);
+        int delay = intent.getIntExtra("delay", 0);
+        int alarm_id = intent.getIntExtra("alarmId", 0);
+        System.out.println("Duration Camera.class " + duration);
+        System.out.println("Delay Camera.class " + delay);
+        System.out.println("Alarm_id Camera.class " + alarm_id);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            soundPool = new SoundPool.Builder()
+                    .setMaxStreams(10) //dac 1
+                    .setAudioAttributes(audioAttributes)
+                    .build();
+        }
+        else {
+            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0); //wybrac 1 oraz STREAM_ALARM
+        }
+        sound1 = soundPool.load(this, R.raw.alert_robery, 1);
+        sound2 = soundPool.load(this, R.raw.bank_robery, 1);
+        sound3 = soundPool.load(this, R.raw.buzzer, 1);
+        sound4 = soundPool.load(this, R.raw.camera_snap, 1);
+        sound5 = soundPool.load(this, R.raw.chicken, 1);
+        sound6 = soundPool.load(this, R.raw.military_alarm, 1);
+        sound7 = soundPool.load(this, R.raw.police, 1);
+        sound8 = soundPool.load(this, R.raw.punch, 1);
+        sound9 = soundPool.load(this, R.raw.school_bell, 1);
+        sound10 = soundPool.load(this, R.raw.whistle, 1);
 
         //taken pictures processing
         android.hardware.Camera.PictureCallback pictureCallback = ((data, camera) -> {
@@ -95,6 +134,7 @@ public class Camera extends AppCompatActivity {
                                 greenDifference > tileTolerance ||
                                 blueDifference > tileTolerance) {
                             Log.d("monitoring", "movement detected");
+                            soundPool.play(alarm_id, 1, 1, 0, 0, 1);
                         }
                     }
                     cameraTiles = currentCameraTiles;
@@ -109,12 +149,6 @@ public class Camera extends AppCompatActivity {
             safeToTakePicture = true;
         });
 
-        //getting data from pickers
-        Intent intent = getIntent();
-        int duration = intent.getIntExtra("duration", 0);
-        int delay = intent.getIntExtra("delay", 0);
-        System.out.println("Duration Camera.class " + duration);
-        System.out.println("Delay Camera.class " + delay);
 
         //monitoring cycle
         monitoring = new Thread(() -> {
@@ -147,6 +181,13 @@ public class Camera extends AppCompatActivity {
             }
         });
         monitoring.start();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        soundPool.release();
+        soundPool = null;
     }
 
     @Override
@@ -243,12 +284,15 @@ public class Camera extends AppCompatActivity {
 
         }
         //ustawienie typu focusa
+
         if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
             parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         else if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY))
             parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY);
         else
             parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO);
+
+
 
         //System.out.println("Scene modes: " + parameters.getSupportedSceneModes());
         //parameters.setSceneMode(android.hardware.Camera.Parameters.SCENE_MODE_HDR);
