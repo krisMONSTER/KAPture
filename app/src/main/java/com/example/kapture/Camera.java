@@ -3,9 +3,13 @@ package com.example.kapture;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -28,6 +32,9 @@ import java.util.concurrent.locks.Lock;
 
 public class Camera extends AppCompatActivity {
 
+    private final String channelID = "KAPture Alert";
+    private NotificationCompat.Builder notification;
+    private int notificationId;
     private final int PERMISSIONS_REQUEST_CODE = 1;
     private final int tileSize = 200;
     private final int tileTolerance = 8;
@@ -52,13 +59,25 @@ public class Camera extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
         preview = findViewById(R.id.camera_frame_layout);
 
+
+        //notification creation
+        notificationId = 0;
+        createNotificationChannel();
+        notification = new NotificationCompat
+                .Builder(this, channelID)
+                .setSmallIcon(R.drawable.ic_kapture_alert)
+                .setContentTitle("KAPture Alert !")
+                .setContentText("Movement Detected")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+
         //detect orientation change to flip fragment view
         orientationListener = new OrientationListener(this) {
             @Override
             public void onSimpleOrientationChanged(int orientation) {
-                if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     System.out.println("landscape");
-                }else if(orientation == Configuration.ORIENTATION_PORTRAIT){
+                } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                     System.out.println("portrait");
                 }
             }
@@ -74,7 +93,7 @@ public class Camera extends AppCompatActivity {
         System.out.println("Delay Camera.class " + delay);
         System.out.println("Alarm_id Camera.class " + alarm_id);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -84,8 +103,7 @@ public class Camera extends AppCompatActivity {
                     .setMaxStreams(10) //dac 1
                     .setAudioAttributes(audioAttributes)
                     .build();
-        }
-        else {
+        } else {
             soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0); //wybrac 1 oraz STREAM_ALARM
         }
         sound1 = soundPool.load(this, R.raw.alert_robery, 1);
@@ -134,6 +152,8 @@ public class Camera extends AppCompatActivity {
                                 greenDifference > tileTolerance ||
                                 blueDifference > tileTolerance) {
                             Log.d("monitoring", "movement detected");
+                            sendNotification(notificationId, notification);
+                            notificationId++;
                             soundPool.play(alarm_id, 1, 1, 0, 0, 1);
                         }
                     }
@@ -184,7 +204,7 @@ public class Camera extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         soundPool.release();
         soundPool = null;
@@ -293,7 +313,6 @@ public class Camera extends AppCompatActivity {
             parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO);
 
 
-
         //System.out.println("Scene modes: " + parameters.getSupportedSceneModes());
         //parameters.setSceneMode(android.hardware.Camera.Parameters.SCENE_MODE_HDR);
 
@@ -328,5 +347,22 @@ public class Camera extends AppCompatActivity {
             downPolymorphic.invoke(mCamera, 90);
         } catch (Exception ignored) {
         }
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "KAPture channel";
+            String description = "Channel used to post notification from KAPture app";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(channelID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public void sendNotification(int not_id, NotificationCompat.Builder notification_builder) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(not_id, notification_builder.build());
     }
 }

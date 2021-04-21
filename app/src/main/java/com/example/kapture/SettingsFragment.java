@@ -53,7 +53,7 @@ public class SettingsFragment extends Fragment {
 
         durationEditText = view.findViewById(R.id.durationEditText);
         delayEditText = view.findViewById(R.id.delayEditText);
-        chooseAlarmSoundText= view.findViewById(R.id.chooseAlarmSoundText);
+        chooseAlarmSoundText = view.findViewById(R.id.chooseAlarmSoundText);
 
 
         durationEditText.setInputType(InputType.TYPE_NULL);
@@ -88,8 +88,13 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
-    private void showDurationDialog(final EditText durationEditText){
+    private void showDurationDialog(final EditText durationEditText) {
         final Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
 
         TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -97,7 +102,7 @@ public class SettingsFragment extends Fragment {
                 calendar.set(Calendar.MINUTE, minute);
                 calendar.set(Calendar.SECOND, second);
 
-                int duration = minute*60 + second;
+                int duration = minute * 60 + second;
                 mListener.setDuration(duration);
 
                 durationEditText.setText(getString(R.string.duration) + ' ' + duration + " sec");
@@ -108,8 +113,12 @@ public class SettingsFragment extends Fragment {
         new TimePickerDialog(getActivity(), timeSetListener, calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), true).show();
     }
 
-    private void showDelayDialog(final EditText delayEditText){
+    private void showDelayDialog(final EditText delayEditText) {
         final Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
         TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -117,7 +126,7 @@ public class SettingsFragment extends Fragment {
                 calendar.set(Calendar.MINUTE, minute);
                 calendar.set(Calendar.SECOND, second);
 
-                int delay = minute*60 + second;
+                int delay = minute * 60 + second;
                 mListener.setDelay(delay);
 
                 delayEditText.setText(getString(R.string.delay) + ' ' + delay + " sec");
@@ -127,13 +136,13 @@ public class SettingsFragment extends Fragment {
         new TimePickerDialog(getActivity(), timeSetListener, calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), true).show();
     }
 
-    private void showChooseAlarmDialog(){
+    private void showChooseAlarmDialog() {
         SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
 
         final String[] languages = {"None", "Alert robery", "Bank robery",
-                                    "Buzzer", "Camera snap", "Chicken",
-                                    "Military alarm", "Police", "Punch",
-                                    "School bell", "Whistle"};
+                "Buzzer", "Camera snap", "Chicken",
+                "Military alarm", "Police", "Punch",
+                "School bell", "Whistle"};
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(this.getActivity());
         mBuilder.setTitle("Choose sound alarm");
         mBuilder.setSingleChoiceItems(languages, -1, new DialogInterface.OnClickListener() {
@@ -143,67 +152,57 @@ public class SettingsFragment extends Fragment {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
 
-                if (i == 0){
+                if (i == 0) {
                     chooseAlarmSoundText.setText(languages[0]);
                     editor.putInt(ALARM_ID, 0);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 1){
+                } else if (i == 1) {
                     chooseAlarmSoundText.setText(languages[1]);
                     editor.putInt(ALARM_ID, 1);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 2){
+                } else if (i == 2) {
                     chooseAlarmSoundText.setText(languages[2]);
                     editor.putInt(ALARM_ID, 2);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 3){
+                } else if (i == 3) {
                     chooseAlarmSoundText.setText(languages[3]);
                     editor.putInt(ALARM_ID, 3);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 4){
+                } else if (i == 4) {
                     chooseAlarmSoundText.setText(languages[4]);
                     editor.putInt(ALARM_ID, 4);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 5){
+                } else if (i == 5) {
                     chooseAlarmSoundText.setText(languages[5]);
                     editor.putInt(ALARM_ID, 5);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 6){
+                } else if (i == 6) {
                     chooseAlarmSoundText.setText(languages[6]);
                     editor.putInt(ALARM_ID, 6);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 7){
+                } else if (i == 7) {
                     chooseAlarmSoundText.setText(languages[7]);
                     editor.putInt(ALARM_ID, 7);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 8){
+                } else if (i == 8) {
                     chooseAlarmSoundText.setText(languages[8]);
                     editor.putInt(ALARM_ID, 8);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 9){
+                } else if (i == 9) {
                     chooseAlarmSoundText.setText(languages[9]);
                     editor.putInt(ALARM_ID, 9);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
-                }
-                else if (i == 10){
+                } else if (i == 10) {
                     chooseAlarmSoundText.setText(languages[10]);
                     editor.putInt(ALARM_ID, 10);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
@@ -220,11 +219,11 @@ public class SettingsFragment extends Fragment {
 
     //passing data to MainActivity.class
     @Override
-    public void onAttach(@NonNull Context context){
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        if (context instanceof IListener){
-            mListener = (IListener)context;
+        if (context instanceof IListener) {
+            mListener = (IListener) context;
         } else {
             throw new RuntimeException((context.toString() + " must implement IListener"));
         }
@@ -232,12 +231,13 @@ public class SettingsFragment extends Fragment {
 
     IListener mListener;
 
-    public interface IListener{
+    public interface IListener {
         void setDuration(int duration);
+
         void setDelay(int delay);
     }
 
-    public void loadData(){
+    public void loadData() {
         SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
 
         delay = sharedPreferences.getInt(DELAY, 3);
@@ -246,7 +246,7 @@ public class SettingsFragment extends Fragment {
 
     }
 
-    public void updateViews(){
+    public void updateViews() {
         delayEditText.setText(getString(R.string.delay) + ' ' + delay + " sec");
         durationEditText.setText(getString(R.string.duration) + ' ' + duration + " sec");
         chooseAlarmSoundText.setText(alarmName);
