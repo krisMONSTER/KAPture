@@ -83,20 +83,30 @@ public class Camera extends AppCompatActivity {
                     workFor.setText("Detecting hasn't started yet!");
                 });
 
-                AtomicInteger alpha = new AtomicInteger(255);
+                AtomicInteger alpha = new AtomicInteger(245);
+                new Thread(() -> {
+                    int delta = -5;
+                    while (startIn.getVisibility() == View.VISIBLE) {
+                        if (alpha.get() > 40 && alpha.get() < 250) {
+                            alpha.addAndGet(delta);
+                            startIn.setTextColor(Color.argb(alpha.get(), 255, 255, 255));
+                        } else {
+                            delta = -delta;
+                            alpha.addAndGet(delta);
+                        }
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
                 while (startInTime > 0) {
                     int temp = startInTime;
+
                     runOnUiThread(() -> {
                         startIn.setText("Starts in: " + temp);
-
-                        if (alpha.get() > 51) {
-                            alpha.addAndGet(-51);
-                            startIn.setTextColor(Color.argb(alpha.get(), 255, 255, 255));
-                        }
-                        else {
-                            alpha.set(255);
-                        }
-
                     });
                     startInTime--;
                     try {
