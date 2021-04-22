@@ -391,12 +391,15 @@ public class Camera extends AppCompatActivity {
         }
         //ustawienie typu focusa
 
+
         if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
             parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         else if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY))
             parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY);
         else
             parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO);
+
+
 
 
         //System.out.println("Scene modes: " + parameters.getSupportedSceneModes());
