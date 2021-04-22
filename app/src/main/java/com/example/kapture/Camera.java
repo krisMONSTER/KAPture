@@ -15,26 +15,29 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Camera extends AppCompatActivity {
 
     private final String channelID = "KAPture Alert";
     private NotificationCompat.Builder notification;
-    private int notificationId;
+    private final int notificationId = 5796;
     private final int PERMISSIONS_REQUEST_CODE = 1;
     private final int tileSize = 200;
     private final int tileTolerance = 8;
@@ -46,8 +49,9 @@ public class Camera extends AppCompatActivity {
     private final Semaphore startMonitoring = new Semaphore(0);
     private OrientationListener orientationListener;
 
+    private LayoutInflater controlInflater;
+
     private SoundPool soundPool;
-    private int sound1, sound2, sound3, sound4, sound5, sound6, sound7, sound8, sound9, sound10;
 
     private android.hardware.Camera mCamera;
     private CameraPreview mPreview;
@@ -58,10 +62,83 @@ public class Camera extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         preview = findViewById(R.id.camera_frame_layout);
+        //preview overlay
+        controlInflater = LayoutInflater.from(getBaseContext());
+        View viewControl = controlInflater.inflate(R.layout.camera_overlay_layout, null);
+        FrameLayout.LayoutParams layoutParamsControl
+                = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.FILL_PARENT,
+                FrameLayout.LayoutParams.FILL_PARENT);
+        this.addContentView(viewControl, layoutParamsControl);
+        TextView workFor = findViewById(R.id.detectionWorkForTV);
+        TextView startIn = findViewById(R.id.detectionStartsInTV);
+        Intent intent = getIntent();
 
+        Thread overlayUpdate = new Thread(() -> {
+            int workForTime = intent.getIntExtra("duration", 0);
+            int startInTime = intent.getIntExtra("delay", 0);
+
+            if (startInTime > 0) {
+                runOnUiThread(() -> {
+
+                    workFor.setText("Detecting hasn't started yet!");
+                });
+
+                AtomicInteger alpha = new AtomicInteger(255);
+                while (startInTime > 0) {
+                    int temp = startInTime;
+                    runOnUiThread(() -> {
+                        startIn.setText("Starts in: " + temp);
+
+                        if (alpha.get() > 51) {
+                            alpha.addAndGet(-51);
+                            startIn.setTextColor(Color.argb(alpha.get(), 255, 255, 255));
+                        }
+                        else {
+                            alpha.set(255);
+                        }
+
+                    });
+                    startInTime--;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (startInTime == 0) {
+
+                runOnUiThread(() -> {
+                    startIn.setVisibility(View.INVISIBLE);
+                    workFor.setVisibility(View.VISIBLE);
+                    startIn.setText("Detecting has already started!");
+                });
+
+                while (workForTime > 0) {
+                    int temp = workForTime;
+                    runOnUiThread(() -> {
+                        workFor.setText("Detecting will be on for: " + temp);
+                    });
+
+                    workForTime--;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            runOnUiThread(() -> {
+                startIn.setText("Detection Finished!");
+                workFor.setText("Detection Finished!");
+            });
+
+
+        });
+        overlayUpdate.start();
 
         //notification creation
-        notificationId = 0;
         createNotificationChannel();
         notification = new NotificationCompat
                 .Builder(this, channelID)
@@ -85,7 +162,7 @@ public class Camera extends AppCompatActivity {
         orientationListener.enable();
 
         //getting data from pickers
-        Intent intent = getIntent();
+
         int duration = intent.getIntExtra("duration", 0);
         int delay = intent.getIntExtra("delay", 0);
         int alarm_id = intent.getIntExtra("alarmId", 0);
@@ -106,16 +183,16 @@ public class Camera extends AppCompatActivity {
         } else {
             soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0); //wybrac 1 oraz STREAM_ALARM
         }
-        sound1 = soundPool.load(this, R.raw.alert_robery, 1);
-        sound2 = soundPool.load(this, R.raw.bank_robery, 1);
-        sound3 = soundPool.load(this, R.raw.buzzer, 1);
-        sound4 = soundPool.load(this, R.raw.camera_snap, 1);
-        sound5 = soundPool.load(this, R.raw.chicken, 1);
-        sound6 = soundPool.load(this, R.raw.military_alarm, 1);
-        sound7 = soundPool.load(this, R.raw.police, 1);
-        sound8 = soundPool.load(this, R.raw.punch, 1);
-        sound9 = soundPool.load(this, R.raw.school_bell, 1);
-        sound10 = soundPool.load(this, R.raw.whistle, 1);
+        soundPool.load(this, R.raw.alert_robery, 1);
+        soundPool.load(this, R.raw.bank_robery, 1);
+        soundPool.load(this, R.raw.buzzer, 1);
+        soundPool.load(this, R.raw.camera_snap, 1);
+        soundPool.load(this, R.raw.chicken, 1);
+        soundPool.load(this, R.raw.military_alarm, 1);
+        soundPool.load(this, R.raw.police, 1);
+        soundPool.load(this, R.raw.punch, 1);
+        soundPool.load(this, R.raw.school_bell, 1);
+        soundPool.load(this, R.raw.whistle, 1);
 
         //taken pictures processing
         android.hardware.Camera.PictureCallback pictureCallback = ((data, camera) -> {
@@ -153,7 +230,6 @@ public class Camera extends AppCompatActivity {
                                 blueDifference > tileTolerance) {
                             Log.d("monitoring", "movement detected");
                             sendNotification(notificationId, notification);
-                            notificationId++;
                             soundPool.play(alarm_id, 1, 1, 0, 0, 1);
                         }
                     }
