@@ -360,18 +360,10 @@ public class Camera extends AppCompatActivity {
             }
 
         }
+
         //ustawienie typu focusa
-
-
-        if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
-            parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-        else if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY))
-            parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_INFINITY);
-        else
-            parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO);
-
-
-
+        if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_FIXED))
+            parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_FIXED);
 
         //System.out.println("Scene modes: " + parameters.getSupportedSceneModes());
         //parameters.setSceneMode(android.hardware.Camera.Parameters.SCENE_MODE_HDR);
@@ -428,6 +420,11 @@ public class Camera extends AppCompatActivity {
     private void processPictureTask(byte[] data) {
         viewModel.setCameraBMP(BitmapFactory.decodeByteArray(data, 0, data.length));
         viewModel.setCameraBMP(Bitmap.createScaledBitmap(viewModel.getCameraBMP(), 400, 400, false));
+        /*if (test){
+            MediaStore.Images.Media.insertImage(getContentResolver(), viewModel.getCameraBMP(),
+                    "image", null);
+            test = false;
+        }*/
         if (viewModel.getCameraTiles() == null) {
             viewModel.setCameraTiles(new ArrayList<>());
             calculateTiles(viewModel.getCameraTiles());
@@ -460,14 +457,10 @@ public class Camera extends AppCompatActivity {
                 if (colourDiff[0] > viewModel.getMovementTolerance() ||
                 colourDiff[1] > viewModel.getMovementTolerance() ||
                 colourDiff[2] > viewModel.getMovementTolerance()) {
-                    /*if (test){
-                        MediaStore.Images.Media.insertImage(getContentResolver(), viewModel.getCameraBMP(),
-                                "image", null);
-                        test = false;
-                    }*/
                     Log.d("monitoring", "movement detected");
                     sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
                     viewModel.getSoundPool().play(viewModel.getAlarmId(), 1, 1, 0, 0, 1);
+                    break;
                 }
             }
             viewModel.setCameraTiles(currentCameraTiles);
