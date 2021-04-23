@@ -1,4 +1,4 @@
-package com.example.kapture;
+package com.example.kapture.activities;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -8,6 +8,8 @@ import android.os.PersistableBundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.kapture.R;
 
 import java.util.Locale;
 

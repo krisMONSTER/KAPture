@@ -1,4 +1,4 @@
-package com.example.kapture;
+package com.example.kapture.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +27,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.example.kapture.CameraPreview;
+import com.example.kapture.CameraViewModel;
+import com.example.kapture.R;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +43,7 @@ public class Camera extends AppCompatActivity {
     //for later
     /*private OrientationListener orientationListener;*/
 
-    private boolean test = true;
+    /*private boolean test = true;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +89,7 @@ public class Camera extends AppCompatActivity {
                     while (startIn.getVisibility() == View.VISIBLE) {
                         if (alpha.get() > 40 && alpha.get() < 250) {
                             alpha.addAndGet(delta);
-                            startIn.setTextColor(Color.argb(alpha.get(), 255, 255, 255));
+                            runOnUiThread(() -> startIn.setTextColor(Color.argb(alpha.get(), 255, 255, 255)));
                         } else {
                             delta = -delta;
                             alpha.addAndGet(delta);
@@ -172,7 +176,6 @@ public class Camera extends AppCompatActivity {
                     .setAudioAttributes(audioAttributes)
                     .build());
         } else {
-            /*soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0); //wybrac 1 oraz STREAM_ALARM*/
             viewModel.setSoundPool(new SoundPool(10, AudioManager.STREAM_MUSIC, 0)); //wybrac 1 oraz STREAM_ALARM
         }
         viewModel.getSoundPool().load(this, R.raw.alert_robery, 1);
@@ -224,11 +227,11 @@ public class Camera extends AppCompatActivity {
             try {
                 TimeUnit.SECONDS.sleep(delay);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                return;
             }
             for (int seconds = 0; seconds < duration; seconds++) {
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.MILLISECONDS.sleep(700);
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -280,11 +283,25 @@ public class Camera extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        ArrayList<String> permissionsList = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+            permissionsList.add(Manifest.permission.CAMERA);
+        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);*/
+        if (permissionsList.size() > 0){
+            String[] permissionsArray = new String[permissionsList.size()];
+            for (int i = 0; i < permissionsList.size(); i++)
+                permissionsArray[i] = permissionsList.get(i);
+            ActivityCompat.requestPermissions(this, permissionsArray, viewModel.getPERMISSIONS_REQUEST_CODE());
+        }
+        else {
+            startCamera();
+        }
+        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, viewModel.getPERMISSIONS_REQUEST_CODE());
         } else {
             startCamera();
-        }
+        }*/
     }
 
     @Override
@@ -308,8 +325,8 @@ public class Camera extends AppCompatActivity {
                 int b = 0;
                 int pixelAmount = 0;
                 int colour;
-                for (int i = x; i < viewModel.getTileSize() + x; i+=2) {
-                    for (int ii = y; ii < viewModel.getTileSize() + y; ii+=2) {
+                for (int i = x; i < viewModel.getTileSize() + x; i++) {
+                    for (int ii = y; ii < viewModel.getTileSize() + y; ii++) {
                         colour = viewModel.getCameraBMP().getPixel(i, ii);
                         r += (colour >> 16) & 0xff;
                         g += (colour >> 8) & 0xff;
@@ -410,12 +427,7 @@ public class Camera extends AppCompatActivity {
 
     private void processPictureTask(byte[] data) {
         viewModel.setCameraBMP(BitmapFactory.decodeByteArray(data, 0, data.length));
-        viewModel.setCameraBMP(Bitmap.createScaledBitmap(viewModel.getCameraBMP(), 600, 600, false));
-        if (test){
-            MediaStore.Images.Media.insertImage(getContentResolver(), viewModel.getCameraBMP(),
-                    "image", null);
-            test = false;
-        }
+        viewModel.setCameraBMP(Bitmap.createScaledBitmap(viewModel.getCameraBMP(), 400, 400, false));
         if (viewModel.getCameraTiles() == null) {
             viewModel.setCameraTiles(new ArrayList<>());
             calculateTiles(viewModel.getCameraTiles());
@@ -428,12 +440,8 @@ public class Camera extends AppCompatActivity {
                 int greenDifference = Math.abs(viewModel.getCameraTiles().get(i)[1] - currentCameraTiles.get(i)[1]);
                 int blueDifference = Math.abs(viewModel.getCameraTiles().get(i)[2] - currentCameraTiles.get(i)[2]);
                 colourDifferences.add(new int[]{redDifference, greenDifference, blueDifference});
-                System.out.print("" + redDifference +
-                        "" + greenDifference +
-                        "" + blueDifference + " ");
             }
-            System.out.println();
-            /*int mutualRedDiff = colourDifferences.get(0)[0];
+            int mutualRedDiff = colourDifferences.get(0)[0];
             int mutualGreenDiff = colourDifferences.get(0)[1];
             int mutualBlueDiff = colourDifferences.get(0)[2];
             for (int i = 1; i < viewModel.getCameraTiles().size(); i++) {
@@ -443,31 +451,25 @@ public class Camera extends AppCompatActivity {
                     mutualGreenDiff = colourDifferences.get(i)[1];
                 if (mutualBlueDiff > colourDifferences.get(i)[2])
                     mutualBlueDiff = colourDifferences.get(i)[2];
-            }*/
+            }
+            System.out.println(mutualRedDiff + " " + mutualGreenDiff + " " + mutualBlueDiff);
             for (int[] colourDiff : colourDifferences) {
-                /*colourDiff[0] = Math.abs(colourDiff[0] - mutualRedDiff);
-                colourDiff[1] = Math.abs(colourDiff[1] - mutualGreenDiff);
-                colourDiff[2] = Math.abs(colourDiff[2] - mutualBlueDiff);*/
+                colourDiff[0] -= mutualRedDiff;
+                colourDiff[1] -= mutualGreenDiff;
+                colourDiff[2] -= mutualBlueDiff;
                 if (colourDiff[0] > viewModel.getMovementTolerance() ||
                 colourDiff[1] > viewModel.getMovementTolerance() ||
                 colourDiff[2] > viewModel.getMovementTolerance()) {
+                    /*if (test){
+                        MediaStore.Images.Media.insertImage(getContentResolver(), viewModel.getCameraBMP(),
+                                "image", null);
+                        test = false;
+                    }*/
                     Log.d("monitoring", "movement detected");
                     sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
                     viewModel.getSoundPool().play(viewModel.getAlarmId(), 1, 1, 0, 0, 1);
                 }
             }
-            /*for (int i = 0; i < viewModel.getCameraTiles().size(); i++) {
-                int redDifference = Math.abs(viewModel.getCameraTiles().get(i)[0] - currentCameraTiles.get(i)[0]);
-                int greenDifference = Math.abs(viewModel.getCameraTiles().get(i)[1] - currentCameraTiles.get(i)[1]);
-                int blueDifference = Math.abs(viewModel.getCameraTiles().get(i)[2] - currentCameraTiles.get(i)[2]);
-                if (redDifference > viewModel.getMovementTolerance() ||
-                        greenDifference > viewModel.getMovementTolerance() ||
-                        blueDifference > viewModel.getMovementTolerance()) {
-                    Log.d("monitoring", "movement detected");
-                    sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
-                    viewModel.getSoundPool().play(viewModel.getAlarmId(), 1, 1, 0, 0, 1);
-                }
-            }*/
             viewModel.setCameraTiles(currentCameraTiles);
         }
     }

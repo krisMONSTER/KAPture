@@ -1,4 +1,4 @@
-package com.example.kapture;
+package com.example.kapture.fragments;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
@@ -26,6 +26,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.example.kapture.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
