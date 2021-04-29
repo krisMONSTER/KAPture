@@ -15,6 +15,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -29,6 +33,7 @@ import android.widget.TextView;
 
 import com.example.kapture.CameraPreview;
 import com.example.kapture.CameraViewModel;
+import com.example.kapture.LightSensor;
 import com.example.kapture.R;
 
 import java.lang.reflect.Method;
@@ -40,6 +45,8 @@ public class Camera extends AppCompatActivity {
     private final CameraViewModel viewModel = new CameraViewModel();
     private CameraPreview mPreview;
     FrameLayout preview;
+
+
     //for later
     /*private OrientationListener orientationListener;*/
 
@@ -75,6 +82,7 @@ public class Camera extends AppCompatActivity {
         TextView workFor = findViewById(R.id.detectionWorkForTV);
         TextView startIn = findViewById(R.id.detectionStartsInTV);
         Intent intent = getIntent();
+        /*prepareSensor();      flash, na razie z niego rezygnujemy   */
 
         Thread overlayUpdate = new Thread(() -> {
             int workForTime = intent.getIntExtra("duration", 0);
@@ -217,6 +225,7 @@ public class Camera extends AppCompatActivity {
 
         //monitoring cycle
         viewModel.setMonitoring(new Thread(() -> {
+
             //wait for camera to load
             try {
                 viewModel.getStartMonitoring().acquire();
@@ -230,6 +239,18 @@ public class Camera extends AppCompatActivity {
                 return;
             }
             for (int seconds = 0; seconds < duration; seconds++) {
+                /*if (viewModel.getCamera() != null) { //do flasha, ale na razie z niego rezygnujemy
+                    System.out.println("Light:" + viewModel.getSensor().getLight());
+                    if (viewModel.getSensor().getLight() < 4 && viewModel.getCamera().getParameters().getFlashMode().equals("off")) {
+                        android.hardware.Camera.Parameters x = viewModel.getCamera().getParameters();
+                        x.setFlashMode("on");
+                        viewModel.getCamera().setParameters(x);
+                    } else {
+                        android.hardware.Camera.Parameters x = viewModel.getCamera().getParameters();
+                        x.setFlashMode("off");
+                        viewModel.getCamera().setParameters(x);
+                    }
+                }*/
                 try {
                     TimeUnit.MILLISECONDS.sleep(700);
                 } catch (InterruptedException e) {
@@ -278,23 +299,24 @@ public class Camera extends AppCompatActivity {
         super.onPause();
         viewModel.setSafeToTakePicture(false);
         preview.removeAllViews();
+        //viewModel.getSensor().getLightSensorManager().unregisterListener(viewModel.getSensor());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        //viewModel.getSensor().getLightSensorManager().registerListener(viewModel.getSensor(), viewModel.getSensor().getLightSensor(), SensorManager.SENSOR_DELAY_NORMAL);
         ArrayList<String> permissionsList = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
             permissionsList.add(Manifest.permission.CAMERA);
         /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);*/
-        if (permissionsList.size() > 0){
+        if (permissionsList.size() > 0) {
             String[] permissionsArray = new String[permissionsList.size()];
             for (int i = 0; i < permissionsList.size(); i++)
                 permissionsArray[i] = permissionsList.get(i);
             ActivityCompat.requestPermissions(this, permissionsArray, viewModel.getPERMISSIONS_REQUEST_CODE());
-        }
-        else {
+        } else {
             startCamera();
         }
         /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -417,6 +439,11 @@ public class Camera extends AppCompatActivity {
         notificationManager.notify(not_id, notification_builder.build());
     }
 
+    public void prepareSensor() {
+        viewModel.setSensor(new LightSensor((SensorManager) getSystemService(SENSOR_SERVICE)));
+
+    }
+
     private void processPictureTask(byte[] data) {
         viewModel.setCameraBMP(BitmapFactory.decodeByteArray(data, 0, data.length));
         viewModel.setCameraBMP(Bitmap.createScaledBitmap(viewModel.getCameraBMP(), 400, 400, false));
@@ -432,7 +459,7 @@ public class Camera extends AppCompatActivity {
             ArrayList<int[]> currentCameraTiles = new ArrayList<>();
             calculateTiles(currentCameraTiles);
             ArrayList<int[]> colourDifferences = new ArrayList<>();
-            for (int i = 0; i < viewModel.getCameraTiles().size(); i++){
+            for (int i = 0; i < viewModel.getCameraTiles().size(); i++) {
                 int redDifference = Math.abs(viewModel.getCameraTiles().get(i)[0] - currentCameraTiles.get(i)[0]);
                 int greenDifference = Math.abs(viewModel.getCameraTiles().get(i)[1] - currentCameraTiles.get(i)[1]);
                 int blueDifference = Math.abs(viewModel.getCameraTiles().get(i)[2] - currentCameraTiles.get(i)[2]);
@@ -455,8 +482,8 @@ public class Camera extends AppCompatActivity {
                 colourDiff[1] -= mutualGreenDiff;
                 colourDiff[2] -= mutualBlueDiff;
                 if (colourDiff[0] > viewModel.getMovementTolerance() ||
-                colourDiff[1] > viewModel.getMovementTolerance() ||
-                colourDiff[2] > viewModel.getMovementTolerance()) {
+                        colourDiff[1] > viewModel.getMovementTolerance() ||
+                        colourDiff[2] > viewModel.getMovementTolerance()) {
                     Log.d("monitoring", "movement detected");
                     sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
                     viewModel.getSoundPool().play(viewModel.getAlarmId(), 1, 1, 0, 0, 1);

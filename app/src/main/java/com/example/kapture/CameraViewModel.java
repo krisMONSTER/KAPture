@@ -28,6 +28,15 @@ public class CameraViewModel extends ViewModel {
     private LayoutInflater controlInflater;
     private SoundPool soundPool;
     private android.hardware.Camera camera;
+    private LightSensor sensor;
+
+    public LightSensor getSensor() {
+        return sensor;
+    }
+
+    public void setSensor(LightSensor sensor) {
+        this.sensor = sensor;
+    }
 
     public LayoutInflater getControlInflater() {
         return controlInflater;
