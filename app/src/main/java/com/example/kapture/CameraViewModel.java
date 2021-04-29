@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModel;
 
+import com.example.kapture.fragments.HistoryHelper.DatabaseHelper;
+
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
@@ -22,15 +24,28 @@ public class CameraViewModel extends ViewModel {
     private NotificationCompat.Builder notification;
     private ArrayList<int[]> cameraTiles;
     private Bitmap cameraBMP;
-    private Thread monitoring;
-    private boolean breakMonitoring = false;
+    private boolean finishAllThreads = false;
     private boolean safeToTakePicture = false;
     private boolean sendSMS = false;
-    private int alarmId;
     private LayoutInflater controlInflater;
     private SoundPool soundPool;
     private android.hardware.Camera camera;
+    private CameraPreview cameraPreview;
+    private int alarmId;
+    private int delay;
+    private int duration;
     private LightSensor sensor;
+    private DatabaseHelper databaseHelper;
+
+    //getters and setters below
+
+    public DatabaseHelper getDatabaseHelper() {
+        return databaseHelper;
+    }
+
+    public void setDatabaseHelper(DatabaseHelper databaseHelper) {
+        this.databaseHelper = databaseHelper;
+    }
 
     public int getPERMISSIONS_REQUEST_SMS() {
         return PERMISSIONS_REQUEST_SMS;
@@ -50,6 +65,30 @@ public class CameraViewModel extends ViewModel {
 
     public void setSensor(LightSensor sensor) {
         this.sensor = sensor;
+    }
+
+    public CameraPreview getCameraPreview() {
+        return cameraPreview;
+    }
+
+    public void setCameraPreview(CameraPreview cameraPreview) {
+        this.cameraPreview = cameraPreview;
+    }
+
+    synchronized public int getDelay() {
+        return delay;
+    }
+
+    synchronized public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    synchronized public int getDuration() {
+        return duration;
+    }
+
+    synchronized public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public LayoutInflater getControlInflater() {
@@ -132,20 +171,12 @@ public class CameraViewModel extends ViewModel {
         this.cameraBMP = cameraBMP;
     }
 
-    public Thread getMonitoring() {
-        return monitoring;
+    public boolean isFinishAllThreads() {
+        return finishAllThreads;
     }
 
-    public void setMonitoring(Thread monitoring) {
-        this.monitoring = monitoring;
-    }
-
-    public boolean isBreakMonitoring() {
-        return breakMonitoring;
-    }
-
-    public void setBreakMonitoring(boolean breakMonitoring) {
-        this.breakMonitoring = breakMonitoring;
+    public void setFinishAllThreads(boolean finishAllThreads) {
+        this.finishAllThreads = finishAllThreads;
     }
 
     public boolean isSafeToTakePicture() {
