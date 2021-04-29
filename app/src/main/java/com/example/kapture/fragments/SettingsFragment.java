@@ -141,13 +141,13 @@ public class SettingsFragment extends Fragment {
     private void showChooseAlarmDialog() {
         SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
 
-        final String[] languages = {"None", "Alert robery", "Bank robery",
+        final String[] alarms = {"None", "Alert robery", "Bank robery",
                 "Buzzer", "Camera snap", "Chicken",
                 "Military alarm", "Police", "Punch",
                 "School bell", "Whistle"};
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(this.getActivity());
         mBuilder.setTitle("Choose sound alarm");
-        mBuilder.setSingleChoiceItems(languages, -1, new DialogInterface.OnClickListener() {
+        mBuilder.setSingleChoiceItems(alarms, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -155,57 +155,57 @@ public class SettingsFragment extends Fragment {
 
 
                 if (i == 0) {
-                    chooseAlarmSoundText.setText(languages[0]);
+                    chooseAlarmSoundText.setText(alarms[0]);
                     editor.putInt(ALARM_ID, 0);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 1) {
-                    chooseAlarmSoundText.setText(languages[1]);
+                    chooseAlarmSoundText.setText(alarms[1]);
                     editor.putInt(ALARM_ID, 1);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 2) {
-                    chooseAlarmSoundText.setText(languages[2]);
+                    chooseAlarmSoundText.setText(alarms[2]);
                     editor.putInt(ALARM_ID, 2);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 3) {
-                    chooseAlarmSoundText.setText(languages[3]);
+                    chooseAlarmSoundText.setText(alarms[3]);
                     editor.putInt(ALARM_ID, 3);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 4) {
-                    chooseAlarmSoundText.setText(languages[4]);
+                    chooseAlarmSoundText.setText(alarms[4]);
                     editor.putInt(ALARM_ID, 4);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 5) {
-                    chooseAlarmSoundText.setText(languages[5]);
+                    chooseAlarmSoundText.setText(alarms[5]);
                     editor.putInt(ALARM_ID, 5);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 6) {
-                    chooseAlarmSoundText.setText(languages[6]);
+                    chooseAlarmSoundText.setText(alarms[6]);
                     editor.putInt(ALARM_ID, 6);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 7) {
-                    chooseAlarmSoundText.setText(languages[7]);
+                    chooseAlarmSoundText.setText(alarms[7]);
                     editor.putInt(ALARM_ID, 7);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 8) {
-                    chooseAlarmSoundText.setText(languages[8]);
+                    chooseAlarmSoundText.setText(alarms[8]);
                     editor.putInt(ALARM_ID, 8);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 9) {
-                    chooseAlarmSoundText.setText(languages[9]);
+                    chooseAlarmSoundText.setText(alarms[9]);
                     editor.putInt(ALARM_ID, 9);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();
                 } else if (i == 10) {
-                    chooseAlarmSoundText.setText(languages[10]);
+                    chooseAlarmSoundText.setText(alarms[10]);
                     editor.putInt(ALARM_ID, 10);
                     editor.putString(ALARM_TEXT, chooseAlarmSoundText.getText().toString());
                     editor.apply();

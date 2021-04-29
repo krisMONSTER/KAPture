@@ -1,6 +1,7 @@
 package com.example.kapture.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -36,28 +37,49 @@ import android.widget.Toast;
 import com.example.kapture.CameraPreview;
 import com.example.kapture.CameraViewModel;
 import com.example.kapture.LightSensor;
+import com.example.kapture.fragments.HistoryHelper.DatabaseHelper;
 import com.example.kapture.R;
 
 import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Camera extends AppCompatActivity {
+    DatabaseHelper mDatabaseHelper;//!!
+    LocalDate localDate;
+    LocalTime localTime;
     private final CameraViewModel viewModel = new CameraViewModel();
     private CameraPreview mPreview;
     FrameLayout preview;
-
-
     //for later
     /*private OrientationListener orientationListener;*/
 
     /*private boolean test = true;*/
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        mDatabaseHelper = new DatabaseHelper(this);//!!
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            localDate = LocalDate.now();
+            localTime = LocalTime.now();
+
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            System.out.println(localDate.format(formatterDate));
+
+            DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("HH:mm:ss");
+            System.out.println(localTime.format(formatterTime));
+        }
+
+
 
         //detect orientation change to flip fragment view
         //for later
@@ -132,6 +154,8 @@ public class Camera extends AppCompatActivity {
                     startIn.setVisibility(View.INVISIBLE);
                     workFor.setVisibility(View.VISIBLE);
                     startIn.setText("Detecting has already started!");
+                    AddData("Start detection", LocalDate.now().toString(), LocalTime.now().toString());//!!
+
                 });
 
                 while (workForTime > 0) {
@@ -152,6 +176,8 @@ public class Camera extends AppCompatActivity {
             runOnUiThread(() -> {
                 startIn.setText("Detection Finished!");
                 workFor.setText("Detection Finished!");
+                AddData("End detection", LocalDate.now().toString(), LocalTime.now().toString());//!!
+
             });
 
 
@@ -227,7 +253,6 @@ public class Camera extends AppCompatActivity {
 
         //monitoring cycle
         viewModel.setMonitoring(new Thread(() -> {
-
             //wait for camera to load
             try {
                 viewModel.getStartMonitoring().acquire();
@@ -271,6 +296,17 @@ public class Camera extends AppCompatActivity {
         viewModel.getMonitoring().start();
     }
 
+    private void toastMessage(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void AddData(String newEntry, String date, String time){
+        boolean insertData = mDatabaseHelper.addData(newEntry, date, time);
+        if (insertData) Log.d("insert data" , "Data Successsfully Inserted!" );//toastMessage("Data Successsfully Inserted!");
+        else Log.d("insert data" , "Something went wrong" );//toastMessage("Something went wrong");
+
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -290,12 +326,11 @@ public class Camera extends AppCompatActivity {
         if (requestCode == viewModel.getPERMISSIONS_REQUEST_CODE()) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startCamera();
+            } else {
+                System.exit(0);
             }
-        } else {
-            System.exit(0);
         }
     }
-
 
     @Override
     protected void onPause() {
@@ -314,12 +349,13 @@ public class Camera extends AppCompatActivity {
             permissionsList.add(Manifest.permission.CAMERA);
         /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);*/
-        if (permissionsList.size() > 0) {
+        if (permissionsList.size() > 0){
             String[] permissionsArray = new String[permissionsList.size()];
             for (int i = 0; i < permissionsList.size(); i++)
                 permissionsArray[i] = permissionsList.get(i);
             ActivityCompat.requestPermissions(this, permissionsArray, viewModel.getPERMISSIONS_REQUEST_CODE());
-        } else {
+        }
+        else {
             startCamera();
         }
         /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -465,6 +501,7 @@ public class Camera extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void processPictureTask(byte[] data) {
         viewModel.setCameraBMP(BitmapFactory.decodeByteArray(data, 0, data.length));
         viewModel.setCameraBMP(Bitmap.createScaledBitmap(viewModel.getCameraBMP(), 400, 400, false));
@@ -480,7 +517,7 @@ public class Camera extends AppCompatActivity {
             ArrayList<int[]> currentCameraTiles = new ArrayList<>();
             calculateTiles(currentCameraTiles);
             ArrayList<int[]> colourDifferences = new ArrayList<>();
-            for (int i = 0; i < viewModel.getCameraTiles().size(); i++) {
+            for (int i = 0; i < viewModel.getCameraTiles().size(); i++){
                 int redDifference = Math.abs(viewModel.getCameraTiles().get(i)[0] - currentCameraTiles.get(i)[0]);
                 int greenDifference = Math.abs(viewModel.getCameraTiles().get(i)[1] - currentCameraTiles.get(i)[1]);
                 int blueDifference = Math.abs(viewModel.getCameraTiles().get(i)[2] - currentCameraTiles.get(i)[2]);
@@ -503,9 +540,11 @@ public class Camera extends AppCompatActivity {
                 colourDiff[1] -= mutualGreenDiff;
                 colourDiff[2] -= mutualBlueDiff;
                 if (colourDiff[0] > viewModel.getMovementTolerance() ||
-                        colourDiff[1] > viewModel.getMovementTolerance() ||
-                        colourDiff[2] > viewModel.getMovementTolerance()) {
+                colourDiff[1] > viewModel.getMovementTolerance() ||
+                colourDiff[2] > viewModel.getMovementTolerance()) {
                     Log.d("monitoring", "movement detected");
+                    AddData("Motion detected", LocalDate.now().toString(), LocalTime.now().toString());//!!
+
                     if (viewModel.isSendSMS())
                         sendSMSNotification();
                     sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
