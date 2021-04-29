@@ -44,28 +44,16 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayoutFragment, sf).commit();
 
         ImageButton ic_settings = findViewById(R.id.ic_settings);
-        ic_settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left)
-                        .replace(R.id.frameLayoutFragment, sf)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+        ic_settings.setOnClickListener(view -> getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left)
+                .replace(R.id.frameLayoutFragment, sf)
+                .commit());
 
         ImageButton ic_history = findViewById(R.id.ic_history);
-        ic_history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.enter_left_to_right, R.anim.exit_left_to_right)
-                        .replace(R.id.frameLayoutFragment, hf)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+        ic_history.setOnClickListener(view -> getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.enter_left_to_right, R.anim.exit_left_to_right)
+                .replace(R.id.frameLayoutFragment, hf)
+                .commit());
 
         //kod odpowiedzialny za interakcję z poszczególnymi ikonkami i napisami
         ImageButton ic_language = findViewById(R.id.ic_language);

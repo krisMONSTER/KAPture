@@ -19,8 +19,8 @@ public class CameraViewModel extends ViewModel {
     private final int notificationId = 5796;
     private final int PERMISSIONS_REQUEST_CODE = 1;
     private final int PERMISSIONS_REQUEST_SMS = 152;
-    private final int tileSize = 200;
-    private final int movementTolerance = 10;
+    private final int tileSize = 100;
+    private final int movementTolerance = 8;
     private NotificationCompat.Builder notification;
     private ArrayList<int[]> cameraTiles;
     private Bitmap cameraBMP;

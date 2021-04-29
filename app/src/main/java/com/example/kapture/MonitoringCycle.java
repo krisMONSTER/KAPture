@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.provider.MediaStore;
 import android.telephony.SmsManager;
 import android.util.Log;
 
@@ -76,7 +77,7 @@ public class MonitoringCycle extends Thread {
 
     private void processPictureTask(byte[] data) {
         viewModel.setCameraBMP(BitmapFactory.decodeByteArray(data, 0, data.length));
-        viewModel.setCameraBMP(Bitmap.createScaledBitmap(viewModel.getCameraBMP(), 400, 400, false));
+        viewModel.setCameraBMP(Bitmap.createScaledBitmap(viewModel.getCameraBMP(), 600, 400, false));
         if (viewModel.getCameraTiles() == null) {
             viewModel.setCameraTiles(new ArrayList<>());
             calculateTiles(viewModel.getCameraTiles());
