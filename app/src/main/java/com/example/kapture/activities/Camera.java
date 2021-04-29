@@ -25,11 +25,13 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.kapture.CameraPreview;
 import com.example.kapture.CameraViewModel;
@@ -288,11 +290,12 @@ public class Camera extends AppCompatActivity {
         if (requestCode == viewModel.getPERMISSIONS_REQUEST_CODE()) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startCamera();
-            } else {
-                System.exit(0);
             }
+        } else {
+            System.exit(0);
         }
     }
+
 
     @Override
     protected void onPause() {
@@ -444,6 +447,24 @@ public class Camera extends AppCompatActivity {
 
     }
 
+    private void sendSMSNotification() {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.SEND_SMS},
+                        viewModel.getPERMISSIONS_REQUEST_SMS());
+            }
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            SmsManager smsManager = SmsManager.getDefault();
+            String telephoneNumber = "783513584";
+            smsManager.sendTextMessage(telephoneNumber, null, "Alert", null, null);
+        }
+    }
+
+
     private void processPictureTask(byte[] data) {
         viewModel.setCameraBMP(BitmapFactory.decodeByteArray(data, 0, data.length));
         viewModel.setCameraBMP(Bitmap.createScaledBitmap(viewModel.getCameraBMP(), 400, 400, false));
@@ -485,6 +506,8 @@ public class Camera extends AppCompatActivity {
                         colourDiff[1] > viewModel.getMovementTolerance() ||
                         colourDiff[2] > viewModel.getMovementTolerance()) {
                     Log.d("monitoring", "movement detected");
+                    if (viewModel.isSendSMS())
+                        sendSMSNotification();
                     sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
                     viewModel.getSoundPool().play(viewModel.getAlarmId(), 1, 1, 0, 0, 1);
                     break;

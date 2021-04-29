@@ -16,6 +16,7 @@ public class CameraViewModel extends ViewModel {
     private final String channelID = "KAPture Alert";
     private final int notificationId = 5796;
     private final int PERMISSIONS_REQUEST_CODE = 1;
+    private final int PERMISSIONS_REQUEST_SMS = 152;
     private final int tileSize = 200;
     private final int movementTolerance = 10;
     private NotificationCompat.Builder notification;
@@ -24,11 +25,24 @@ public class CameraViewModel extends ViewModel {
     private Thread monitoring;
     private boolean breakMonitoring = false;
     private boolean safeToTakePicture = false;
+    private boolean sendSMS = false;
     private int alarmId;
     private LayoutInflater controlInflater;
     private SoundPool soundPool;
     private android.hardware.Camera camera;
     private LightSensor sensor;
+
+    public int getPERMISSIONS_REQUEST_SMS() {
+        return PERMISSIONS_REQUEST_SMS;
+    }
+
+    public boolean isSendSMS() {
+        return sendSMS;
+    }
+
+    public void setSendSMS(boolean sendSMS) {
+        this.sendSMS = sendSMS;
+    }
 
     public LightSensor getSensor() {
         return sensor;
