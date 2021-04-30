@@ -101,11 +101,11 @@ public class Camera extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == viewModel.getPERMISSIONS_REQUEST_CODE()) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startCamera();
-            } else {
-                System.exit(0);
+            for (int grantResult : grantResults){
+                if (grantResult != PackageManager.PERMISSION_GRANTED)
+                    System.exit(0);
             }
+            startCamera();
         }
     }
 
@@ -126,7 +126,9 @@ public class Camera extends AppCompatActivity {
         ArrayList<String> permissionsList = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
             permissionsList.add(Manifest.permission.CAMERA);
-        if (permissionsList.size() > 0){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)
+            permissionsList.add(Manifest.permission.SEND_SMS);
+        if (permissionsList.size() > 0) {
             String[] permissionsArray = new String[permissionsList.size()];
             for (int i = 0; i < permissionsList.size(); i++)
                 permissionsArray[i] = permissionsList.get(i);

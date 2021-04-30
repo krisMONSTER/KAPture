@@ -159,14 +159,6 @@ public class MonitoringCycle extends Thread {
     }
 
     private void sendSMSNotification() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.SEND_SMS)) {
-            } else {
-                ActivityCompat.requestPermissions((Activity) context,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        viewModel.getPERMISSIONS_REQUEST_SMS());
-            }
-        }
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
             SmsManager smsManager = SmsManager.getDefault();
             String telephoneNumber = "783513584";
