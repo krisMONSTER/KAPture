@@ -1,8 +1,10 @@
 package com.example.kapture.fragments;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -43,6 +45,7 @@ public class HistoryFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 
@@ -53,6 +56,7 @@ public class HistoryFragment extends Fragment {
         mDatabaseHelper = new DatabaseHelper(this.getActivity());
 
         deleteAllBtn = getActivity().findViewById(R.id.deleteAllBtn);
+        deleteAllBtn.setText(getString(R.string.deleteAll));
         deleteAllBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,7 +93,7 @@ public class HistoryFragment extends Fragment {
 
                 DataModel dataModel= dataModels.get(position);
 
-                Snackbar.make(view, dataModel.getEvent() + "\n"+dataModel.getDate() + "\t" + dataModel.getTime(), Snackbar.LENGTH_LONG)
+                Snackbar.make(view, dataModel.getEvent(getContext()) + "\n"+dataModel.getDate() + "\t" + dataModel.getTime(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
             }
         });
