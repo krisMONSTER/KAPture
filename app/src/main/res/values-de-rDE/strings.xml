@@ -12,4 +12,6 @@
     <string name="start_monitoring">STARTÜBERWACHUNG</string>
     <string name="hello">Guten Morgen!</string>
     <string name="settings">Einstellungen</string>
+    <string name="choose_phone_number">Wählen Sie die Telefonnummer</string>
+    <string name="taking_pictures">Fotografieren</string>
 </resources>

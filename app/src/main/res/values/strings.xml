@@ -11,7 +11,8 @@
     <string name="start_monitoring">START MONITORING</string>
     <string name="hello">Good morning!</string>
     <string name="settings">Settings</string>
-
+    <string name="choose_phone_number">Choose phone number</string>
+    <string name="taking_pictures">Taking pictures</string>
 
 
     <!--    &lt;!&ndash; Settings Activity Title &ndash;&gt;-->

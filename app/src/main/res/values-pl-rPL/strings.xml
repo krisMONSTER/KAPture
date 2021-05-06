@@ -12,4 +12,6 @@
     <string name="start_monitoring">ROZPOCZNIJ MONITOROWANIE</string>
     <string name="hello">Dzień dobry!</string>
     <string name="settings">Ustawienia</string>
+    <string name="choose_phone_number">Wybierz numer telefonu</string>
+    <string name="taking_pictures">Wykonywanie zdjęć</string>
 </resources>
