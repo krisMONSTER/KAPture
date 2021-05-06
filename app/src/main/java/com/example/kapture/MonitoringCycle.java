@@ -131,9 +131,9 @@ public class MonitoringCycle extends Thread {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         addData("Motion detected", LocalDate.now().toString(), LocalTime.now().toString());
                     }
-                    if (CameraViewModel.isSendSMS()) {
+                    if (viewModel.isSendSMS()) {
                         sendSMSNotification();
-                        //CameraViewModel.setSendSMS(false);
+                        viewModel.setSendSMS(false);
                     }
                     sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
                     viewModel.getSoundPool().play(viewModel.getAlarmId(), 1, 1, 0, 0, 1);
