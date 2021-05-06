@@ -131,9 +131,9 @@ public class MonitoringCycle extends Thread {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         addData("Motion detected", LocalDate.now().toString(), LocalTime.now().toString());
                     }
-                    if (viewModel.isSendSMS()) {
+                    if (CameraViewModel.isSendSMS()) {
                         sendSMSNotification();
-                        viewModel.setSendSMS(false);
+                        //CameraViewModel.setSendSMS(false);
                     }
                     sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
                     viewModel.getSoundPool().play(viewModel.getAlarmId(), 1, 1, 0, 0, 1);
@@ -181,8 +181,8 @@ public class MonitoringCycle extends Thread {
     private void sendSMSNotification() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
             SmsManager smsManager = SmsManager.getDefault();
-            String telephoneNumber = "783513584";
-            smsManager.sendTextMessage(telephoneNumber, null, "Alert", null, null);
+            String telephoneNumber = "883387832";
+            //smsManager.sendTextMessage(telephoneNumber, null, "Alert", null, null);
         }
     }
 

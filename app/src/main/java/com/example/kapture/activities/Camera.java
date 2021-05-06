@@ -85,10 +85,11 @@ public class Camera extends AppCompatActivity {
         monitoringCycle.start();
     }
 
-    public void addData(String newEntry, String date, String time){
+    public void addData(String newEntry, String date, String time) {
         boolean insertData = viewModel.getDatabaseHelper().addData(newEntry, date, time);
-        if (insertData) Log.d("insert data" , "Data Successsfully Inserted!" );//toastMessage("Data Successsfully Inserted!");
-        else Log.d("insert data" , "Something went wrong" );//toastMessage("Something went wrong");
+        if (insertData)
+            Log.d("insert data", "Data Successsfully Inserted!");//toastMessage("Data Successsfully Inserted!");
+        else Log.d("insert data", "Something went wrong");//toastMessage("Something went wrong");
     }
 
     @Override
@@ -101,7 +102,7 @@ public class Camera extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == viewModel.getPERMISSIONS_REQUEST_CODE()) {
-            for (int grantResult : grantResults){
+            for (int grantResult : grantResults) {
                 if (grantResult != PackageManager.PERMISSION_GRANTED)
                     System.exit(0);
             }
@@ -133,8 +134,7 @@ public class Camera extends AppCompatActivity {
             for (int i = 0; i < permissionsList.size(); i++)
                 permissionsArray[i] = permissionsList.get(i);
             ActivityCompat.requestPermissions(this, permissionsArray, viewModel.getPERMISSIONS_REQUEST_CODE());
-        }
-        else {
+        } else {
             startCamera();
         }
     }
@@ -229,10 +229,7 @@ public class Camera extends AppCompatActivity {
         TextView startIn = findViewById(R.id.detectionStartsInTV);
 
         Thread overlayUpdate = new Thread(() -> {
-            int workForTime = viewModel.getDuration();
-            int startInTime = viewModel.getDelay();
-
-            if (startInTime > 0) {
+            if (viewModel.getDelay() > 0) {
                 runOnUiThread(() -> workFor.setText(R.string.detectingHasntStartedYet));
 
                 AtomicInteger alpha = new AtomicInteger(245);
@@ -254,13 +251,13 @@ public class Camera extends AppCompatActivity {
                     }
                 }).start();
 
-                while (startInTime > 0) {
-                    int temp = startInTime;
+                while (viewModel.getDelay() > 0) {
+                    int temp = viewModel.getDelay();
 
                     runOnUiThread(() -> {
                         startIn.setText(getString(R.string.startsIn) + temp);
                     });
-                    startInTime--;
+
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -268,7 +265,7 @@ public class Camera extends AppCompatActivity {
                     }
                 }
             }
-            if (startInTime == 0) {
+            if (viewModel.getDelay() == 0) {
 
                 runOnUiThread(() -> {
                     startIn.setVisibility(View.INVISIBLE);
@@ -277,11 +274,9 @@ public class Camera extends AppCompatActivity {
                     addData("Start detection", LocalDate.now().toString(), LocalTime.now().toString());//!!
                 });
 
-                while (workForTime > 0) {
-                    int temp = workForTime;
+                while (viewModel.getDuration() > 0) {
+                    int temp = viewModel.getDuration();
                     runOnUiThread(() -> workFor.setText(getString(R.string.detectingWillBeOnFor) + temp));
-
-                    workForTime--;
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -301,7 +296,7 @@ public class Camera extends AppCompatActivity {
         overlayUpdate.start();
     }
 
-    private void setupNotification(){
+    private void setupNotification() {
         createNotificationChannel();
         viewModel.setNotification(new NotificationCompat
                 .Builder(this, viewModel.getChannelID())
@@ -311,7 +306,7 @@ public class Camera extends AppCompatActivity {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT));
     }
 
-    private void setupAlarmSound(){
+    private void setupAlarmSound() {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)

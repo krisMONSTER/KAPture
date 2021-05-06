@@ -1,5 +1,5 @@
 package com.example.kapture.fragments;
-
+import com.example.kapture.CameraViewModel;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -16,6 +16,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.camera.view.CameraView;
 import androidx.fragment.app.Fragment;
 
 import android.text.InputType;
@@ -23,11 +25,13 @@ import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.kapture.R;
+import com.example.kapture.activities.Camera;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,6 +40,7 @@ import java.util.Locale;
 public class SettingsFragment extends Fragment {
 
     private EditText durationEditText, delayEditText, chooseAlarmSoundText;
+    private SwitchCompat phoneNumberSwitch;
 
     public static final String SHARED_PREFS = "SettingsFragment";
     public static final String DELAY = "delayName";
@@ -56,12 +61,19 @@ public class SettingsFragment extends Fragment {
         durationEditText = view.findViewById(R.id.durationEditText);
         delayEditText = view.findViewById(R.id.delayEditText);
         chooseAlarmSoundText = view.findViewById(R.id.chooseAlarmSoundText);
-
+        phoneNumberSwitch = view.findViewById(R.id.phoneNumberSwitch);
 
         durationEditText.setInputType(InputType.TYPE_NULL);
         delayEditText.setInputType(InputType.TYPE_NULL);
         chooseAlarmSoundText.setInputType(InputType.TYPE_NULL);
 
+        phoneNumberSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CameraViewModel.setSendSMS(isChecked);
+                System.out.println("SMS: " + CameraViewModel.isSendSMS());
+            }
+        });
         durationEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

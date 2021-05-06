@@ -26,7 +26,7 @@ public class CameraViewModel extends ViewModel {
     private Bitmap cameraBMP;
     private boolean finishAllThreads = false;
     private boolean safeToTakePicture = false;
-    private boolean sendSMS = false;
+    private static boolean sendSMS = false;
     private LayoutInflater controlInflater;
     private SoundPool soundPool;
     private android.hardware.Camera camera;
@@ -51,12 +51,12 @@ public class CameraViewModel extends ViewModel {
         return PERMISSIONS_REQUEST_SMS;
     }
 
-    public boolean isSendSMS() {
+    public static boolean isSendSMS() {
         return sendSMS;
     }
 
-    public void setSendSMS(boolean sendSMS) {
-        this.sendSMS = sendSMS;
+    public static void setSendSMS(boolean sendSMSbool) {
+        sendSMS = sendSMSbool;
     }
 
     public LightSensor getSensor() {
