@@ -14,6 +14,18 @@
     <string name="choose_phone_number">Choose phone number</string>
     <string name="taking_pictures">Taking pictures</string>
 
+    <string name="startsIn">Starts in: </string>
+    <string name="detectingHasAlreadyStarted">Detecting has already started!</string>
+    <string name="detectingHasntStartedYet">Detecting hasn\'t started yet!</string>
+    <string name="detectingWillBeOnFor">Detecting will be on for: </string>
+    <string name="detectionFinished">Detection Finished!</string>
+    <string name="startDetection">Start detection</string>
+    <string name="endDetection">End detection</string>
+    <string name="motionDetected">Motion detected</string>
+    <string name="deleteAll">Delete all</string>
+
+
+
 
     <!--    &lt;!&ndash; Settings Activity Title &ndash;&gt;-->
     <!--    <string name="title_activity_settings">Settings</string>-->

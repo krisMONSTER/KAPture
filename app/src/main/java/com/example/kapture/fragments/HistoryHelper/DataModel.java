@@ -1,9 +1,16 @@
 package com.example.kapture.fragments.HistoryHelper;
 
-public class DataModel {
-    private String event;
-    private String date;
-    private String time;
+import android.content.Context;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import com.example.kapture.R;
+
+public class DataModel extends AppCompatActivity {
+    private final String event;
+    private final String date;
+    private final String time;
 
     public DataModel(String event, String date, String time){
         this.event = event;
@@ -15,8 +22,11 @@ public class DataModel {
         return date;
     }
 
-    public String getEvent() {
-        return event;
+    public String getEvent(Context context) {
+        if (event.equals("Start detection")) return context.getString(R.string.startDetection);
+        else if (event.equals("Motion detected")) return context.getString(R.string.motionDetected);
+        else return context.getString(R.string.endDetection);
+        //return event;
     }
 
     public String getTime() {

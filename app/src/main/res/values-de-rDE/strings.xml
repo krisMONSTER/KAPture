@@ -14,4 +14,16 @@
     <string name="settings">Einstellungen</string>
     <string name="choose_phone_number">Wählen Sie die Telefonnummer</string>
     <string name="taking_pictures">Fotografieren</string>
+
+    <string name="startsIn">Beginnt in: </string>
+    <string name="detectingHasAlreadyStarted">Die Erkennung hat bereits begonnen!</string>
+    <string name="detectingHasntStartedYet">Die Erkennung hat noch nicht begonnen!</string>
+    <string name="detectingWillBeOnFor">Die Erkennung ist eingeschaltet für: </string>
+    <string name="detectionFinished">Erkennung beendet!</string>
+    <string name="startDetection">Erkennung starten</string>
+    <string name="endDetection">Erkennung beenden</string>
+    <string name="motionDetected">Bewegung erkannt</string>
+    <string name="deleteAll">Alles löschen</string>
+
+
 </resources>

@@ -43,7 +43,7 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
         switch (v.getId())
         {
             case R.id.capturedImage:
-                Snackbar.make(v, "Image " + dataModel.getEvent(), Snackbar.LENGTH_LONG)
+                Snackbar.make(v, "Image " + dataModel.getEvent(getContext()), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
                 break;
         }
@@ -82,7 +82,7 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
         //result.startAnimation(animation);
         lastPosition = position;
 
-        viewHolder.eventTextView.setText(dataModel.getEvent());
+        viewHolder.eventTextView.setText(dataModel.getEvent(getContext()));
         viewHolder.dateTextView.setText(dataModel.getDate());
         viewHolder.timeTextView.setText(dataModel.getTime());
         viewHolder.capturedImage.setOnClickListener(this);

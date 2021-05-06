@@ -85,7 +85,7 @@ public class Camera extends AppCompatActivity {
         monitoringCycle.start();
     }
 
-    public void AddData(String newEntry, String date, String time){
+    public void addData(String newEntry, String date, String time){
         boolean insertData = viewModel.getDatabaseHelper().addData(newEntry, date, time);
         if (insertData) Log.d("insert data" , "Data Successsfully Inserted!" );//toastMessage("Data Successsfully Inserted!");
         else Log.d("insert data" , "Something went wrong" );//toastMessage("Something went wrong");
@@ -233,7 +233,7 @@ public class Camera extends AppCompatActivity {
             int startInTime = viewModel.getDelay();
 
             if (startInTime > 0) {
-                runOnUiThread(() -> workFor.setText("Detecting hasn't started yet!"));
+                runOnUiThread(() -> workFor.setText(R.string.detectingHasntStartedYet));
 
                 AtomicInteger alpha = new AtomicInteger(245);
                 new Thread(() -> {
@@ -258,7 +258,7 @@ public class Camera extends AppCompatActivity {
                     int temp = startInTime;
 
                     runOnUiThread(() -> {
-                        startIn.setText("Starts in: " + temp);
+                        startIn.setText(getString(R.string.startsIn) + temp);
                     });
                     startInTime--;
                     try {
@@ -273,12 +273,13 @@ public class Camera extends AppCompatActivity {
                 runOnUiThread(() -> {
                     startIn.setVisibility(View.INVISIBLE);
                     workFor.setVisibility(View.VISIBLE);
-                    startIn.setText("Detecting has already started!");
+                    startIn.setText(getString(R.string.detectingHasAlreadyStarted));
+                    addData("Start detection", LocalDate.now().toString(), LocalTime.now().toString());//!!
                 });
 
                 while (workForTime > 0) {
                     int temp = workForTime;
-                    runOnUiThread(() -> workFor.setText("Detecting will be on for: " + temp));
+                    runOnUiThread(() -> workFor.setText(getString(R.string.detectingWillBeOnFor) + temp));
 
                     workForTime--;
                     try {
@@ -290,9 +291,9 @@ public class Camera extends AppCompatActivity {
             }
 
             runOnUiThread(() -> {
-                startIn.setText("Detection Finished!");
-                workFor.setText("Detection Finished!");
-                AddData("End detection", LocalDate.now().toString(), LocalTime.now().toString());//!!
+                startIn.setText(R.string.detectionFinished);
+                workFor.setText(R.string.detectionFinished);
+                addData("End detection", LocalDate.now().toString(), LocalTime.now().toString());//!!
             });
 
 

@@ -6,19 +6,26 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.telephony.SmsManager;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class MonitoringCycle extends Thread {
+    LocalDate localDate;
+    LocalTime localTime;
     private final CameraViewModel viewModel;
     private final android.hardware.Camera.PictureCallback pictureCallback;
     private final Context context;
@@ -26,6 +33,17 @@ public class MonitoringCycle extends Thread {
     public MonitoringCycle(Context context, CameraViewModel viewModel) {
         this.context = context;
         this.viewModel = viewModel;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            localDate = LocalDate.now();
+            localTime = LocalTime.now();
+
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            System.out.println(localDate.format(formatterDate));
+
+            DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("HH:mm:ss");
+            System.out.println(localTime.format(formatterTime));
+        }
 
         pictureCallback = ((data, camera) -> {
             viewModel.setSafeToTakePicture(false);
@@ -110,7 +128,9 @@ public class MonitoringCycle extends Thread {
                         colourDiff[1] > viewModel.getMovementTolerance() ||
                         colourDiff[2] > viewModel.getMovementTolerance()) {
                     Log.d("monitoring", "movement detected");
-                    /*addData("Motion detected", LocalDate.now().toString(), LocalTime.now().toString());*/
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        addData("Motion detected", LocalDate.now().toString(), LocalTime.now().toString());
+                    }
                     if (viewModel.isSendSMS()) {
                         sendSMSNotification();
                         viewModel.setSendSMS(false);

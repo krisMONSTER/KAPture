@@ -14,4 +14,16 @@
     <string name="settings">Ustawienia</string>
     <string name="choose_phone_number">Wybierz numer telefonu</string>
     <string name="taking_pictures">Wykonywanie zdjęć</string>
+
+    <string name="startsIn">Rozpoczęcie za: </string>
+    <string name="detectingHasAlreadyStarted">Wykrywanie się rozpoczęło!</string>
+    <string name="detectingHasntStartedYet">Wykrywanie się jeszcze nie rozpoczęło!</string>
+    <string name="detectingWillBeOnFor">Wykrywanie rozpocznie się za: </string>
+    <string name="detectionFinished">Wykrywanie ukończone!</string>
+    <string name="startDetection">Rozpoczęcie wykrywania</string>
+    <string name="endDetection">Zakończenie wykrywania</string>
+    <string name="motionDetected">Wykryto ruch</string>
+    <string name="deleteAll">Usuń wszystko</string>
+
+
 </resources>
