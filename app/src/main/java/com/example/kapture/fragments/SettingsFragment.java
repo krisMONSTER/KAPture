@@ -40,7 +40,6 @@ import java.util.Locale;
 public class SettingsFragment extends Fragment {
 
     private EditText durationEditText, delayEditText, chooseAlarmSoundText;
-    private SwitchCompat phoneNumberSwitch;
 
     public static final String SHARED_PREFS = "SettingsFragment";
     public static final String DELAY = "delayName";
@@ -61,19 +60,12 @@ public class SettingsFragment extends Fragment {
         durationEditText = view.findViewById(R.id.durationEditText);
         delayEditText = view.findViewById(R.id.delayEditText);
         chooseAlarmSoundText = view.findViewById(R.id.chooseAlarmSoundText);
-        phoneNumberSwitch = view.findViewById(R.id.phoneNumberSwitch);
+
 
         durationEditText.setInputType(InputType.TYPE_NULL);
         delayEditText.setInputType(InputType.TYPE_NULL);
         chooseAlarmSoundText.setInputType(InputType.TYPE_NULL);
 
-        phoneNumberSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                CameraViewModel.setSendSMS(isChecked);
-                System.out.println("SMS: " + CameraViewModel.isSendSMS());
-            }
-        });
         durationEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
