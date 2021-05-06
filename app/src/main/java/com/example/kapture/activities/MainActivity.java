@@ -25,10 +25,16 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
     public static final String SHARED_PREFS = "SettingsFragment";
     public static final String DELAY = "delayName";
     public static final String DURATION = "durationName";
+    public static final String PHONE_NUMBER = "phoneNumber";
+    public static final String IS_PHONE_NUMBER = "isPhoneNumber";
+    public static final String IS_TAKING_PICTURES = "isTakingPictures";
     public static final String ALARM_ID = "alarmId";
 
     int delay = 5;
     int duration = 10;
+    String phoneNumber = "69";
+    boolean isPhoneNumber = false;
+    boolean isTakingPictures = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
                 intent.putExtra("delay",  sharedPreferences.getInt(DELAY, 2));
                 intent.putExtra("duration", sharedPreferences.getInt(DURATION, 6));
                 intent.putExtra("alarmId", sharedPreferences.getInt(ALARM_ID, 0));
+                intent.putExtra("phoneNumber", sharedPreferences.getString(PHONE_NUMBER, ""));
+                intent.putExtra("isPhoneNumber", sharedPreferences.getBoolean(IS_PHONE_NUMBER, false));
+                intent.putExtra("isTakingPictures", sharedPreferences.getBoolean(IS_TAKING_PICTURES, false));
                 startActivity(intent);
                 System.out.println("Delay Main.class " + sharedPreferences.getInt(DELAY, 2));
                 System.out.println("Duration Main.class " + sharedPreferences.getInt(DURATION, 6));
@@ -98,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
                 intent.putExtra("delay",  sharedPreferences.getInt(DELAY, 2));
                 intent.putExtra("duration", sharedPreferences.getInt(DURATION, 6));
                 intent.putExtra("alarmId", sharedPreferences.getInt(ALARM_ID, 0));
+                intent.putExtra("phoneNumber", sharedPreferences.getString(PHONE_NUMBER, ""));
+                intent.putExtra("isPhoneNumber", sharedPreferences.getBoolean(IS_PHONE_NUMBER, false));
+                intent.putExtra("isTakingPictures", sharedPreferences.getBoolean(IS_TAKING_PICTURES, false));
                 startActivity(intent);
                 System.out.println("Delay Main.class " + sharedPreferences.getInt(DELAY, 2));
                 System.out.println("Duration Main.class " + sharedPreferences.getInt(DURATION, 6));
@@ -175,12 +187,35 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         saveData();
     }
 
+    @Override
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PHONE_NUMBER, phoneNumber);
+        editor.apply();
+    }
+
+    @Override
+    public void setIsPhoneNumber(boolean isPhoneNumber) {
+        this.isPhoneNumber = isPhoneNumber;
+        saveData();
+    }
+
+    @Override
+    public void setIsTakingPictures(boolean isTakingPictures) {
+        this.isTakingPictures = isTakingPictures;
+        saveData();
+    }
+
     public void saveData(){
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putInt(DELAY, this.delay);
         editor.putInt(DURATION, this.duration);
+        editor.putBoolean(IS_PHONE_NUMBER, this.isPhoneNumber);
+        editor.putBoolean(IS_TAKING_PICTURES, this.isTakingPictures);
         editor.apply();
     }
 }

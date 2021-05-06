@@ -48,7 +48,6 @@ public class Camera extends AppCompatActivity {
     private TimerManager timerManager;
     FrameLayout preview;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,11 +65,14 @@ public class Camera extends AppCompatActivity {
             System.out.println(localTime.format(formatterTime));
         }
 
-        //getting data from pickers
+        //receive data from bundle
         viewModel.setDuration(getIntent().getIntExtra("duration", 0));
         viewModel.setDelay(getIntent().getIntExtra("delay", 0));
-
         viewModel.setAlarmId(getIntent().getIntExtra("alarmId", 0));
+        viewModel.setPhoneNumber(getIntent().getStringExtra("phoneNumber"));
+        viewModel.setSendSMS(getIntent().getBooleanExtra("isPhoneNumber", false));
+        viewModel.setTakingPicturesEnabled(getIntent().getBooleanExtra("isTakingPictures", false));
+
         viewModel.setDatabaseHelper(new DatabaseHelper(this));
         setupPreviewOverlay();
         setupNotification();
@@ -129,6 +131,8 @@ public class Camera extends AppCompatActivity {
             permissionsList.add(Manifest.permission.CAMERA);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)
             permissionsList.add(Manifest.permission.SEND_SMS);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionsList.size() > 0) {
             String[] permissionsArray = new String[permissionsList.size()];
             for (int i = 0; i < permissionsList.size(); i++)
@@ -217,7 +221,6 @@ public class Camera extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setupPreviewOverlay() {
         viewModel.setControlInflater(LayoutInflater.from(getBaseContext()));
         View viewControl = viewModel.getControlInflater().inflate(R.layout.camera_overlay_layout, null);
@@ -271,7 +274,9 @@ public class Camera extends AppCompatActivity {
                     startIn.setVisibility(View.INVISIBLE);
                     workFor.setVisibility(View.VISIBLE);
                     startIn.setText(getString(R.string.detectingHasAlreadyStarted));
-                    addData("Start detection", LocalDate.now().toString(), LocalTime.now().toString());//!!
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        addData("Start detection", LocalDate.now().toString(), LocalTime.now().toString());
+                    }
                 });
 
                 while (viewModel.getDuration() > 0) {
@@ -288,7 +293,9 @@ public class Camera extends AppCompatActivity {
             runOnUiThread(() -> {
                 startIn.setText(R.string.detectionFinished);
                 workFor.setText(R.string.detectionFinished);
-                addData("End detection", LocalDate.now().toString(), LocalTime.now().toString());//!!
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    addData("End detection", LocalDate.now().toString(), LocalTime.now().toString());
+                }
             });
 
 

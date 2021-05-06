@@ -135,6 +135,11 @@ public class MonitoringCycle extends Thread {
                         sendSMSNotification();
                         viewModel.setSendSMS(false);
                     }
+                    if (viewModel.isTakingPicturesEnabled()){
+                        MediaStore.Images.Media.insertImage(context.getContentResolver(), viewModel.getCameraBMP(),
+                                "thief", null);
+                        viewModel.setTakingPicturesEnabled(false);
+                    }
                     sendNotification(viewModel.getNotificationId(), viewModel.getNotification());
                     viewModel.getSoundPool().play(viewModel.getAlarmId(), 1, 1, 0, 0, 1);
                     break;
@@ -181,8 +186,7 @@ public class MonitoringCycle extends Thread {
     private void sendSMSNotification() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
             SmsManager smsManager = SmsManager.getDefault();
-            String telephoneNumber = "883387832";
-            //smsManager.sendTextMessage(telephoneNumber, null, "Alert", null, null);
+            smsManager.sendTextMessage(viewModel.getPhoneNumber(), null, "Alert", null, null);
         }
     }
 

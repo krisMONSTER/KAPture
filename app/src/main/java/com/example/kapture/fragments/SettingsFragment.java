@@ -1,5 +1,5 @@
 package com.example.kapture.fragments;
-import com.example.kapture.CameraViewModel;
+
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -20,18 +20,18 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.camera.view.CameraView;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.kapture.R;
-import com.example.kapture.activities.Camera;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,16 +40,25 @@ import java.util.Locale;
 public class SettingsFragment extends Fragment {
 
     private EditText durationEditText, delayEditText, chooseAlarmSoundText;
+    EditText choosePhoneNumber;
+    SwitchCompat phoneNumberSwitch;
+    SwitchCompat takingPicturesSwitch;
 
     public static final String SHARED_PREFS = "SettingsFragment";
     public static final String DELAY = "delayName";
     public static final String DURATION = "durationName";
+    public static final String PHONE_NUMBER = "phoneNumber";
+    public static final String IS_PHONE_NUMBER = "isPhoneNumber";
+    public static final String IS_TAKING_PICTURES = "isTakingPictures";
     public static final String ALARM_ID = "alarmId";
     public static final String ALARM_TEXT = "alarmName";
 
     private int delay;
     private int duration;
     private String alarmName;
+    private String phoneNumber;
+    private boolean isPhoneNumber;
+    private boolean isTakingPictures;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,32 +69,38 @@ public class SettingsFragment extends Fragment {
         durationEditText = view.findViewById(R.id.durationEditText);
         delayEditText = view.findViewById(R.id.delayEditText);
         chooseAlarmSoundText = view.findViewById(R.id.chooseAlarmSoundText);
-
+        choosePhoneNumber = view.findViewById(R.id.choosePhoneNumber);
+        phoneNumberSwitch = view.findViewById(R.id.phoneNumberSwitch);
+        takingPicturesSwitch = view.findViewById(R.id.takingPicturesSwitch);
 
         durationEditText.setInputType(InputType.TYPE_NULL);
         delayEditText.setInputType(InputType.TYPE_NULL);
         chooseAlarmSoundText.setInputType(InputType.TYPE_NULL);
 
-        durationEditText.setOnClickListener(new View.OnClickListener() {
+        durationEditText.setOnClickListener(v -> showDurationDialog(durationEditText));
+
+        delayEditText.setOnClickListener(v -> showDelayDialog(delayEditText));
+
+        chooseAlarmSoundText.setOnClickListener(v -> showChooseAlarmDialog());
+
+        choosePhoneNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                showDurationDialog(durationEditText);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mListener.setPhoneNumber(s.toString());
             }
         });
 
-        delayEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDelayDialog(delayEditText);
-            }
-        });
+        phoneNumberSwitch.setOnCheckedChangeListener((v, isChecked) ->
+                mListener.setIsPhoneNumber(isChecked));
 
-        chooseAlarmSoundText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showChooseAlarmDialog();
-            }
-        });
+        takingPicturesSwitch.setOnCheckedChangeListener((v, isChecked) ->
+                mListener.setIsTakingPictures(isChecked));
 
         // Inflate the layout for this fragment
 
@@ -241,6 +256,12 @@ public class SettingsFragment extends Fragment {
         void setDuration(int duration);
 
         void setDelay(int delay);
+
+        void setPhoneNumber(String phoneNumber);
+
+        void setIsPhoneNumber(boolean isPhoneNumber);
+
+        void setIsTakingPictures(boolean isTakingPictures);
     }
 
     public void loadData() {
@@ -249,12 +270,17 @@ public class SettingsFragment extends Fragment {
         delay = sharedPreferences.getInt(DELAY, 3);
         duration = sharedPreferences.getInt(DURATION, 7);
         alarmName = sharedPreferences.getString(ALARM_TEXT, "None");
-
+        phoneNumber = sharedPreferences.getString(PHONE_NUMBER, "");
+        isPhoneNumber = sharedPreferences.getBoolean(IS_PHONE_NUMBER, false);
+        isTakingPictures = sharedPreferences.getBoolean(IS_TAKING_PICTURES, false);
     }
 
     public void updateViews() {
         delayEditText.setText(getString(R.string.delay) + ' ' + delay + " sec");
         durationEditText.setText(getString(R.string.duration) + ' ' + duration + " sec");
         chooseAlarmSoundText.setText(alarmName);
+        choosePhoneNumber.setText(phoneNumber);
+        phoneNumberSwitch.setChecked(isPhoneNumber);
+        takingPicturesSwitch.setChecked(isTakingPictures);
     }
 }

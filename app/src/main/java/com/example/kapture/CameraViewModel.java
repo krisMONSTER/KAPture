@@ -26,7 +26,6 @@ public class CameraViewModel extends ViewModel {
     private Bitmap cameraBMP;
     private boolean finishAllThreads = false;
     private boolean safeToTakePicture = false;
-    private boolean sendSMS = false;
     private LayoutInflater controlInflater;
     private SoundPool soundPool;
     private android.hardware.Camera camera;
@@ -34,10 +33,30 @@ public class CameraViewModel extends ViewModel {
     private int alarmId;
     private int delay;
     private int duration;
+    private String phoneNumber;
+    private boolean sendSMS;
+    private boolean takingPicturesEnabled;
     private LightSensor sensor;
     private DatabaseHelper databaseHelper;
 
     //getters and setters below
+
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public boolean isTakingPicturesEnabled() {
+        return takingPicturesEnabled;
+    }
+
+    public void setTakingPicturesEnabled(boolean takingPicturesEnabled) {
+        this.takingPicturesEnabled = takingPicturesEnabled;
+    }
 
     public DatabaseHelper getDatabaseHelper() {
         return databaseHelper;
