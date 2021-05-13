@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -39,7 +40,7 @@ import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
 
-    private EditText durationEditText, delayEditText, chooseAlarmSoundText;
+    private TextView durationEditText, delayEditText, chooseAlarmSoundText;
     EditText choosePhoneNumber;
     SwitchCompat phoneNumberSwitch;
     SwitchCompat takingPicturesSwitch;
@@ -73,10 +74,6 @@ public class SettingsFragment extends Fragment {
         phoneNumberSwitch = view.findViewById(R.id.phoneNumberSwitch);
         takingPicturesSwitch = view.findViewById(R.id.takingPicturesSwitch);
 
-        durationEditText.setInputType(InputType.TYPE_NULL);
-        delayEditText.setInputType(InputType.TYPE_NULL);
-        chooseAlarmSoundText.setInputType(InputType.TYPE_NULL);
-
         durationEditText.setOnClickListener(v -> showDurationDialog(durationEditText));
 
         delayEditText.setOnClickListener(v -> showDelayDialog(delayEditText));
@@ -109,7 +106,7 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
-    private void showDurationDialog(final EditText durationEditText) {
+    private void showDurationDialog(final TextView durationEditText) {
         final Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -134,7 +131,7 @@ public class SettingsFragment extends Fragment {
         new TimePickerDialog(getActivity(), timeSetListener, calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), true).show();
     }
 
-    private void showDelayDialog(final EditText delayEditText) {
+    private void showDelayDialog(final TextView delayEditText) {
         final Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);

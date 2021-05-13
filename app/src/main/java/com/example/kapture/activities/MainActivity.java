@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -113,10 +114,16 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
                 .commit());
 
         ImageButton ic_history = findViewById(R.id.ic_history);
-        ic_history.setOnClickListener(view -> getSupportFragmentManager().beginTransaction()
+        ic_history.setOnClickListener(view -> {
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager
+                    .hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+            getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.enter_left_to_right, R.anim.exit_left_to_right)
                 .replace(R.id.frameLayoutFragment, hf)
-                .commit());
+                .commit();
+        });
 
         //kod odpowiedzialny za interakcję z poszczególnymi ikonkami i napisami
         ImageButton ic_language = findViewById(R.id.ic_language);

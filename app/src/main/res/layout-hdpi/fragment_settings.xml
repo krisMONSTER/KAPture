@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".fragments.SettingsFragment">
+    tools:context=".fragments.SettingsFragment"
+    android:id="@+id/settings_fragment">
 
-    <EditText
+    <TextView
         android:id="@+id/delayEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:padding="10dp"
         android:hint="@string/choose_delay"
         android:textColor="@color/colorDetail"
         android:textColorHint="@color/colorDetail"
@@ -32,11 +33,11 @@
         app:layout_constraintBottom_toBottomOf="@id/delayEditText"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
+    <TextView
         android:id="@+id/durationEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:padding="10dp"
         android:hint="@string/choose_duration"
         android:textColor="@color/colorDetail"
         android:textColorHint="@color/colorDetail"
@@ -57,11 +58,11 @@
         app:layout_constraintBottom_toBottomOf="@id/durationEditText"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
+    <TextView
         android:id="@+id/chooseAlarmSoundText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:padding="10dp"
         android:hint="@string/choose_alarm_sound"
         android:textColor="@color/colorDetail"
         android:textColorHint="@color/colorDetail"
@@ -86,7 +87,7 @@
         android:id="@+id/choosePhoneNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:padding="10dp"
         android:hint="@string/choose_phone_number"
         android:textColor="@color/colorDetail"
         android:textColorHint="@color/colorDetail"
@@ -120,7 +121,7 @@
         android:id="@+id/takingPictures"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:padding="10dp"
         android:hint="@string/taking_pictures"
         android:textColorHint="@color/colorDetail"
         android:textSize="24sp"
