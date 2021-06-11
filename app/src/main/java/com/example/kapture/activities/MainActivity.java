@@ -115,10 +115,11 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
         ImageButton ic_history = findViewById(R.id.ic_history);
         ic_history.setOnClickListener(view -> {
-            InputMethodManager inputMethodManager =
+            /*InputMethodManager inputMethodManager =
                     (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-            inputMethodManager
-                    .hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+            if (inputMethodManager != null)
+                inputMethodManager
+                    .hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);*/
             getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.enter_left_to_right, R.anim.exit_left_to_right)
                 .replace(R.id.frameLayoutFragment, hf)

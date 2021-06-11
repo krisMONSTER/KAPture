@@ -43,6 +43,8 @@ public class MainActivityTest {
         pressBack();
         onView(withId(R.id.ic_language)).perform(click());
         pressBack();
+        //hide keyboard
+        pressBack();
 
         //switch to history fragment
         onView(withId(R.id.ic_history)).perform(click());
